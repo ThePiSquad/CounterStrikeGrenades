@@ -3,6 +3,7 @@ package club.pisquad.minecraft.csgrenades
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.registery.ModEntities
 import club.pisquad.minecraft.csgrenades.registery.ModItems
+import club.pisquad.minecraft.csgrenades.render.FlashBangEffect
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
@@ -18,6 +19,8 @@ import thedarkcolour.kotlinforforge.KotlinModLoadingContext
  *
  * An example for blocks is in the `blocks` package of this mod.
  */
+
+const val FLASHBANG_EFFECT_KEY = "flashbang_effect"
 
 @Mod(CounterStrikeGrenades.ID)
 object CounterStrikeGrenades {
@@ -44,6 +47,7 @@ object CounterStrikeGrenades {
      */
     private fun onClientSetup(event: FMLClientSetupEvent) {
         Logger.log(Level.INFO, "Initializing client...")
+        KotlinModLoadingContext.get().getKEventBus().addListener(FlashBangEffect::tick)
 
     }
 
