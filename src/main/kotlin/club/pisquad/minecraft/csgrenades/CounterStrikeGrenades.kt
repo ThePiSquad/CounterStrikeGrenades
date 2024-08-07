@@ -30,8 +30,8 @@ object CounterStrikeGrenades {
 
         Logger.log(Level.INFO, "Hello Counter Strike Grenades")
 
-        ModItems.ITEMS.register(KotlinModLoadingContext.get().getKEventBus())
         ModEntities.ENTITIES.register(KotlinModLoadingContext.get().getKEventBus())
+        ModItems.ITEMS.register(KotlinModLoadingContext.get().getKEventBus())
 
         var messageTypeCount = 0
         CsGrenadePacketHandler.registerMessage()
@@ -44,6 +44,7 @@ object CounterStrikeGrenades {
      */
     private fun onClientSetup(event: FMLClientSetupEvent) {
         Logger.log(Level.INFO, "Initializing client...")
+
     }
 
     /**

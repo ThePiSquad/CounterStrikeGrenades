@@ -10,8 +10,10 @@ import net.minecraft.resources.ResourceLocation
 
 class FlashBangRenderer(context: EntityRendererProvider.Context) : EntityRenderer<FlashBangEntity>(context) {
 
+
     companion object {
         val TEXTURE = ResourceLocation(CounterStrikeGrenades.ID, "textures/entity/flashbang.png")
+        val MODEL = ResourceLocation(CounterStrikeGrenades.ID, "models/entity/flashbang.json")
     }
 
     override fun getTextureLocation(p0: FlashBangEntity): ResourceLocation {
@@ -26,6 +28,9 @@ class FlashBangRenderer(context: EntityRendererProvider.Context) : EntityRendere
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
+        poseStack.pushPose()
+        poseStack.translate(0.0, 0.5, 0.0)
+
 
         return super.render(entity, entityYaw, partialTick, poseStack, buffer, packedLight)
     }

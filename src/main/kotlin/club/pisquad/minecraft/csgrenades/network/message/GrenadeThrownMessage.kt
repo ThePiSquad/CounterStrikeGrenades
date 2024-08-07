@@ -2,6 +2,7 @@ package club.pisquad.minecraft.csgrenades.network.message
 
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
+import club.pisquad.minecraft.csgrenades.registery.ModEntities
 import club.pisquad.minecraft.csgrenades.serializer.RotationSerializer
 import club.pisquad.minecraft.csgrenades.serializer.Vec3Serializer
 import kotlinx.serialization.Serializable
@@ -11,7 +12,6 @@ import net.minecraft.core.Rotations
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.entity.EntityType
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.NetworkEvent
 import org.apache.logging.log4j.LogManager
@@ -19,9 +19,9 @@ import org.apache.logging.log4j.Logger
 import java.util.function.Supplier
 
 @Serializable
-enum class GrenadeThrownType {
-    Strong,
-    Weak
+enum class GrenadeThrownType(val speed: Float) {
+    Strong(1.5f),
+    Weak(0.5f)
 }
 
 @Serializable
@@ -49,14 +49,28 @@ class GrenadeThrownMessage(
             Logger.info("Handling message $msg")
 
             val context = ctx.get()
-            context.enqueueWork {
-                val sender: ServerPlayer = context.sender ?: return@enqueueWork
-                val serverLevel: ServerLevel = sender.level() as ServerLevel
-                val arrow = EntityType.ARROW.create(serverLevel) ?: return@enqueueWork
-                arrow.setPos(sender.x, sender.y + 1, sender.z)
-                arrow.shootFromRotation(sender, sender.xRot, sender.yRot, 0.0f, 3f, 0f)
-                serverLevel.addFreshEntity(arrow)
+            val sender: ServerPlayer? = context.sender
+            if (sender == null) {
+                Logger.debug("Handling message failed because the sender is null")
+                return
             }
+
+            val serverLevel: ServerLevel = sender.level() as ServerLevel
+
+
+            val grenadeEntity = ModEntities.FLASH_BANG_ENTITY.get().create(serverLevel)
+
+            if (grenadeEntity == null) {
+                Logger.debug("Failed to create grenadeEntity")
+                return
+            }
+
+            grenadeEntity.setPos(sender.x, sender.y + 1.2, sender.z)
+            grenadeEntity.shootFromRotation(sender, sender.xRot, sender.yRot, 0.0f, msg.thrownType.speed, 0f)
+
+            val summonResult = serverLevel.addFreshEntity(grenadeEntity)
+            Logger.info("Add grenade entity result $summonResult")
+
             context.packetHandled = true
         }
 

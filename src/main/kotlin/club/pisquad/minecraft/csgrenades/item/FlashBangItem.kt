@@ -54,7 +54,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
             )
         )
 
-        return true
+        return false
     }
 
 }

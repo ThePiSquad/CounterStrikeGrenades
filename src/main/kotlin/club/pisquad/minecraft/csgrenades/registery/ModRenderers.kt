@@ -2,7 +2,8 @@ package club.pisquad.minecraft.csgrenades.registery
 
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades.Logger
-import club.pisquad.minecraft.csgrenades.entity.client.render.FlashBangRenderer
+import net.minecraft.client.renderer.entity.EntityRenderers
+import net.minecraft.client.renderer.entity.ThrownItemRenderer
 import net.minecraftforge.client.event.EntityRenderersEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
@@ -14,10 +15,8 @@ object ModRenderers {
         Logger.info("Registering entity renderers")
 
         Logger.info("Registering render for flashbang")
-        event.registerEntityRenderer(
-            ModEntities.FLASH_BANG_ENTITY.get(),
-            ::FlashBangRenderer
-        )
+
+        EntityRenderers.register(ModEntities.FLASH_BANG_ENTITY.get(), ::ThrownItemRenderer)
 
     }
 }
