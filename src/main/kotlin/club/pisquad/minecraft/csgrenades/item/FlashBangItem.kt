@@ -13,8 +13,11 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.div
+import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 
 
 class FlashBangItem(properties: Properties) : Item(properties) {
@@ -27,13 +30,18 @@ class FlashBangItem(properties: Properties) : Item(properties) {
             return super.use(level, player, usedHand)
         }
 
-        // Client side Logic
+        val speed = player.deltaMovement.div(2.0).plus(player.lookAngle.normalize().scale(GrenadeThrownType.Weak.speed))
+            .length()
+
+        val playerPosition = player.position()
+
         CsGrenadePacketHandler.INSTANCE.sendToServer(
             GrenadeThrownMessage(
-                player.position(),
-                Rotations(player.xRot, player.yRot, 0.0f),
+                speed,
+                GrenadeType.FLASH_BANG,
                 GrenadeThrownType.Weak,
-                GrenadeType.FLASH_BANG
+                Vec3(playerPosition.x, playerPosition.y + 1.2, playerPosition.z),
+                Rotations(player.xRot, player.yRot, 0.0f),
             )
         )
 
@@ -44,16 +52,20 @@ class FlashBangItem(properties: Properties) : Item(properties) {
         if (player == null || !player.level().isClientSide) {
             return false
         }
+        val speed =
+            player.deltaMovement.scale(1.3).plus(player.lookAngle.normalize().scale(GrenadeThrownType.Strong.speed))
+                .length()
+        val playerPosition = player.position()
 
         CsGrenadePacketHandler.INSTANCE.sendToServer(
             GrenadeThrownMessage(
-                player.position(),
-                Rotations(player.xRot, player.yRot, 0.0f),
+                speed,
+                GrenadeType.FLASH_BANG,
                 GrenadeThrownType.Strong,
-                GrenadeType.FLASH_BANG
+                Vec3(playerPosition.x, playerPosition.y + 1.2, playerPosition.z),
+                Rotations(player.xRot, player.yRot, 0.0f),
             )
         )
-
         return false
     }
 

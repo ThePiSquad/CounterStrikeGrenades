@@ -19,17 +19,18 @@ import org.apache.logging.log4j.Logger
 import java.util.function.Supplier
 
 @Serializable
-enum class GrenadeThrownType(val speed: Float) {
-    Strong(1.5f),
-    Weak(0.5f)
+enum class GrenadeThrownType(val speed: Double) {
+    Strong(1.3),
+    Weak(0.4)
 }
 
 @Serializable
 class GrenadeThrownMessage(
+    val speed: Double,
+    val grenadeType: GrenadeType,
+    val thrownType: GrenadeThrownType,
     @Serializable(with = Vec3Serializer::class) val position: Vec3,
     @Serializable(with = RotationSerializer::class) val rotations: Rotations,
-    val thrownType: GrenadeThrownType,
-    val grenadeType: GrenadeType,
 ) {
     companion object {
         private val Logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":message:grenadeThrownMessage")
@@ -65,8 +66,8 @@ class GrenadeThrownMessage(
                 return
             }
 
-            grenadeEntity.setPos(sender.x, sender.y + 1.2, sender.z)
-            grenadeEntity.shootFromRotation(sender, sender.xRot, sender.yRot, 0.0f, msg.thrownType.speed, 0f)
+            grenadeEntity.setPos(sender.x, sender.y + 1.62, sender.z)
+            grenadeEntity.shootFromRotation(sender, sender.xRot, sender.yRot, 0.0f, msg.speed.toFloat(), 0f)
 
             val summonResult = serverLevel.addFreshEntity(grenadeEntity)
             Logger.info("Add grenade entity result $summonResult")
