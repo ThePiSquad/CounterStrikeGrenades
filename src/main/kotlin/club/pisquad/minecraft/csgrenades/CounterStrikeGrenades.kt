@@ -1,11 +1,15 @@
 package club.pisquad.minecraft.csgrenades
 
+import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
+import club.pisquad.minecraft.csgrenades.registery.ModEntities
+import club.pisquad.minecraft.csgrenades.registery.ModItems
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import thedarkcolour.kotlinforforge.KotlinModLoadingContext
 
 /**
  * Main mod class. Should be an `object` declaration annotated with `@Mod`.
@@ -14,15 +18,23 @@ import org.apache.logging.log4j.Logger
  *
  * An example for blocks is in the `blocks` package of this mod.
  */
+
 @Mod(CounterStrikeGrenades.ID)
 object CounterStrikeGrenades {
     const val ID = "csgrenades"
 
     // the logger for our mod
-    val LOGGER: Logger = LogManager.getLogger(ID)
+    val Logger: Logger = LogManager.getLogger(ID)
 
     init {
-        LOGGER.log(Level.INFO, "Hello world!")
+
+        Logger.log(Level.INFO, "Hello Counter Strike Grenades")
+
+        ModItems.ITEMS.register(KotlinModLoadingContext.get().getKEventBus())
+        ModEntities.ENTITIES.register(KotlinModLoadingContext.get().getKEventBus())
+
+        var messageTypeCount = 0
+        CsGrenadePacketHandler.registerMessage()
     }
 
     /**
@@ -31,13 +43,13 @@ object CounterStrikeGrenades {
      * Fired on the mod specific event bus.
      */
     private fun onClientSetup(event: FMLClientSetupEvent) {
-        LOGGER.log(Level.INFO, "Initializing client...")
+        Logger.log(Level.INFO, "Initializing client...")
     }
 
     /**
      * Fired on the global Forge bus.
      */
     private fun onServerSetup(event: FMLDedicatedServerSetupEvent) {
-        LOGGER.log(Level.INFO, "Server starting...")
+        Logger.log(Level.INFO, "Server starting...")
     }
 }
