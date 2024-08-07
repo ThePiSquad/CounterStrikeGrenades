@@ -47,11 +47,9 @@ class GrenadeThrownMessage(
 //            Logger.info("Handling message $msg")
 
             val context = ctx.get()
-            val sender: ServerPlayer? = context.sender
-            if (sender == null) {
-//                Logger.debug("Handling message failed because the sender is null")
+            val sender: ServerPlayer = context.sender
+                ?: //                Logger.debug("Handling message failed because the sender is null")
                 return
-            }
 
             val serverLevel: ServerLevel = sender.level() as ServerLevel
 

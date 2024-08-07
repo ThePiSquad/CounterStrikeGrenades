@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.network.NetworkDirection
 import net.minecraftforge.network.NetworkEvent
 import net.minecraftforge.network.NetworkRegistry
+import net.minecraftforge.network.simple.SimpleChannel
 import java.util.*
 import java.util.function.Supplier
 
@@ -20,7 +21,7 @@ object CsGrenadePacketHandler {
             return field
         }
 
-    val INSTANCE = NetworkRegistry.newSimpleChannel(
+    val INSTANCE: SimpleChannel = NetworkRegistry.newSimpleChannel(
         ResourceLocation(CounterStrikeGrenades.ID, "event"), { PROTOCOL_VERSION },
         PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals
     )
