@@ -25,7 +25,7 @@ import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 
 
 class FlashBangItem(properties: Properties) : Item(properties) {
-    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_item")
+//    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_item")
     private var isHoldingBefore: Boolean = false
 
     override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {

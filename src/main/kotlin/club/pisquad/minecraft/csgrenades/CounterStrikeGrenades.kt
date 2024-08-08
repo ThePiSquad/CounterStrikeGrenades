@@ -21,8 +21,6 @@ import thedarkcolour.kotlinforforge.KotlinModLoadingContext
  * An example for blocks is in the `blocks` package of this mod.
  */
 
-const val FLASHBANG_EFFECT_KEY = "flashbang_effect"
-
 @Mod(CounterStrikeGrenades.ID)
 object CounterStrikeGrenades {
     const val ID = "csgrenades"

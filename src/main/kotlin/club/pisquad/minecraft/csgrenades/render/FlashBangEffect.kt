@@ -23,7 +23,7 @@ object FlashBangEffect {
     private var flashBangEffectValue: Double = 0.0
     private var shouldDecay: Boolean = false
 
-    private var tickCount = 0;
+    private var tickCount = 0
     private var tickBeforeDecay = TICK_BEFORE_FLASHBANG_DECAY_BASE_VALUE
 
     private var rendering: Boolean = false
