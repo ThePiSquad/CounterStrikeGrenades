@@ -8,9 +8,11 @@ import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownMessage
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownType
+import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.core.Rotations
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
@@ -24,6 +26,7 @@ import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 
 class FlashBangItem(properties: Properties) : Item(properties) {
     private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_item")
+    private var isHoldingBefore: Boolean = false
 
     override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
 
@@ -73,4 +76,16 @@ class FlashBangItem(properties: Properties) : Item(properties) {
         return false
     }
 
+    override fun inventoryTick(stack: ItemStack, level: Level, entity: Entity, slotId: Int, isSelected: Boolean) {
+        if (!level.isClientSide) return
+
+        if (isSelected) {
+            if (!isHoldingBefore) {
+                entity.playSound(ModSoundEvents.FLASHBANG_DRAW.get(), 1.0f, 1.0f)
+                isHoldingBefore = true
+            }
+        } else {
+            isHoldingBefore = false
+        }
+    }
 }

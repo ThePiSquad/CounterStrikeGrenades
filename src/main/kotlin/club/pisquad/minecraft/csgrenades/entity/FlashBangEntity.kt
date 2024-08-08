@@ -1,8 +1,10 @@
 package club.pisquad.minecraft.csgrenades.entity
 
+import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.network.message.FlashBangExplodedMessage
 import club.pisquad.minecraft.csgrenades.registery.ModItems
+import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.core.Direction
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -13,12 +15,14 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.PacketDistributor
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.div
 import kotlin.math.sqrt
 
 class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
     CounterStrikeGrenadeEntity(pEntityType, pLevel) {
-    //    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_entity")
+    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_entity")
     private var speed: Float = 0.0f
 
     companion object {
@@ -56,6 +60,7 @@ class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
                     PacketDistributor.ALL.noArg(),
                     FlashBangExplodedMessage(this.position())
                 )
+                this.playSound(ModSoundEvents.FLASHBANG_EXPLODE.get(), 1.5f, 1f)
                 this.kill()
 
             }
@@ -64,22 +69,30 @@ class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
     }
 
     override fun onHitBlock(result: BlockHitResult) {
-//        logger.info("Grenade[@$this] hit block at ${result.blockPos}")
+        logger.info("Grenade[@$this] hit block at ${result.blockPos}")
+        this.deltaMovement = when (result.direction) {
+            Direction.UP, Direction.DOWN -> Vec3(deltaMovement.x, -deltaMovement.y, deltaMovement.z)
 
-        when (result.direction) {
-            Direction.UP, Direction.DOWN -> this.deltaMovement =
-                Vec3(deltaMovement.x, -deltaMovement.y, deltaMovement.z)
-
-            Direction.WEST, Direction.EAST -> this.deltaMovement =
+            Direction.WEST, Direction.EAST ->
                 Vec3(-deltaMovement.x, deltaMovement.y, deltaMovement.z)
 
-            Direction.NORTH, Direction.SOUTH -> this.deltaMovement =
+            Direction.NORTH, Direction.SOUTH ->
                 Vec3(deltaMovement.x, deltaMovement.y, -deltaMovement.z)
 
-            null -> {}
+            null -> deltaMovement
+
         }
-        this.setPos(this.xo, this.yo, this.zo)
-        this.deltaMovement = this.deltaMovement.div(3.0)
+        if (result.isInside) {
+            this.setPos(this.xOld, this.yOld, this.zOld)
+        }
+
+        this.deltaMovement = this.deltaMovement.div(2.0)
+
+        this.playSound(ModSoundEvents.GRENADE_HIT.get(), 1f, 1f)
+    }
+
+    override fun onAddedToWorld() {
+        this.playSound(ModSoundEvents.GRENADE_THROW.get(), 1f, 1f)
     }
 
     override fun shouldBeSaved(): Boolean {

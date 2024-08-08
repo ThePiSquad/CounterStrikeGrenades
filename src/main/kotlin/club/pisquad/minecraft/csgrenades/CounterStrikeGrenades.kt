@@ -3,6 +3,7 @@ package club.pisquad.minecraft.csgrenades
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.registery.ModEntities
 import club.pisquad.minecraft.csgrenades.registery.ModItems
+import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import club.pisquad.minecraft.csgrenades.render.FlashBangEffect
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
@@ -35,6 +36,7 @@ object CounterStrikeGrenades {
 
         ModEntities.ENTITIES.register(KotlinModLoadingContext.get().getKEventBus())
         ModItems.ITEMS.register(KotlinModLoadingContext.get().getKEventBus())
+        ModSoundEvents.register(KotlinModLoadingContext.get().getKEventBus())
 
         CsGrenadePacketHandler.registerMessage()
     }

@@ -1,0 +1,32 @@
+{
+  "grenade.hit": {
+    "category": "player",
+    "sounds": [
+      "csgrenades:common/grenade_hit"
+    ]
+  },
+  "grenade.throw": {
+    "category": "player",
+    "sounds": [
+      "csgrenades:common/grenade_throw"
+    ]
+  },
+  "flashbang.draw": {
+    "category": "player",
+    "sounds": [
+      "csgrenades:flashbang/flashbang_draw"
+    ]
+  },
+  "flashbang.explode": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:flashbang/flashbang_explode"
+    ]
+  },
+  "flashbang.explosion_ring": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:flashbang/explosion_ring"
+    ]
+  }
+}

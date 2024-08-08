@@ -40,6 +40,12 @@ class FlashBangExplodedMessage(
         }
 
         fun handler(msg: FlashBangExplodedMessage, ctx: Supplier<NetworkEvent.Context>) {
+            val context = ctx.get()
+            context.packetHandled = true
+            if (!context.direction.receptionSide.isClient) {
+                return
+            }
+
             val player = Minecraft.getInstance().player ?: return
             val newValue =
                 calculateFlashbangEffectInitialValue(
