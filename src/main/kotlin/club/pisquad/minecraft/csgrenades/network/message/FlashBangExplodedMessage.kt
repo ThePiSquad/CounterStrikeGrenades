@@ -1,6 +1,5 @@
 package club.pisquad.minecraft.csgrenades.network.message
 
-import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.render.FlashBangEffect
 import club.pisquad.minecraft.csgrenades.serializer.Vec3Serializer
 import kotlinx.serialization.Serializable
@@ -13,8 +12,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.NetworkEvent
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.minus
 import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.toVec3i
@@ -23,7 +20,7 @@ import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.min
 
-private val Logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":message:flashbangExplodedMessage")
+//private val Logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":message:flashbangExplodedMessage")
 
 @Serializable
 class FlashBangExplodedMessage(
@@ -111,18 +108,6 @@ private fun calculateFlashbangEffectInitialValue(
         }
 
     }
-    Logger.info("FlashBangBlockingType $flashbangBlockingType")
-
-    // Base value
-//    var value = 1 - log((distance + 2).times(0.5), 5.0).times(0.5)
-
-//    value = when (flashbangBlockingType) {
-//        FlashBangBlockingType.NO_BLOCKING -> value
-//        FlashBangBlockingType.PARTIAL_BLOCKING -> value.times(0.5)
-//        FlashBangBlockingType.FULLY_BLOCKING -> 0.0
-//    }
-    // calculate new value based on angle
-//    value += 2 - min(log(angle + 1.0, 100.0).times(8), 1.5)
 
     val distanceFactor = getDistanceFactor(distance)
     val angleFactor = getAngleFactor(angle)
