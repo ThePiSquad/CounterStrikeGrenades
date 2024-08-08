@@ -2,7 +2,7 @@ package club.pisquad.minecraft.csgrenades.render
 
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.FLASHBANG_EFFECT_TAG_DECAY_RATE
-import club.pisquad.minecraft.csgrenades.TICK_BEFORE_FLASHBANG_DECAY
+import club.pisquad.minecraft.csgrenades.TICK_BEFORE_FLASHBANG_DECAY_BASE_VALUE
 import net.minecraft.util.FastColor
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RenderGuiOverlayEvent
@@ -16,9 +16,11 @@ import kotlin.math.min
 
 @Mod.EventBusSubscriber(modid = CounterStrikeGrenades.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object FlashBangEffect {
-    var flashBangEffectValue: Double = 0.0
-    var shouldDecay: Boolean = false
+    private var flashBangEffectValue: Double = 0.0
+    private var shouldDecay: Boolean = false
+
     private var tickCount = 0;
+    private var tickBeforeDecay = TICK_BEFORE_FLASHBANG_DECAY_BASE_VALUE
 
     private var rendering: Boolean = false
 
@@ -28,9 +30,10 @@ object FlashBangEffect {
         shouldDecay = false
         rendering = true
 
+        tickBeforeDecay = (TICK_BEFORE_FLASHBANG_DECAY_BASE_VALUE * flashBangEffectValue).toInt()
     }
 
-    fun renderFinished() {
+    private fun renderFinished() {
         shouldDecay = true
         tickCount = 0
     }
@@ -70,7 +73,7 @@ object FlashBangEffect {
 
         tickCount += 1
 
-        if (tickCount > TICK_BEFORE_FLASHBANG_DECAY) {
+        if (tickCount > TICK_BEFORE_FLASHBANG_DECAY_BASE_VALUE) {
             shouldDecay = true
         }
 

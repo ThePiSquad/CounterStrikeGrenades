@@ -11,4 +11,4 @@ const val WEAK_THROW_PLAYER_SPEED_SCALE: Double = 0.5
 
 // Flashbang effect settings
 const val FLASHBANG_EFFECT_TAG_DECAY_RATE: Double = 0.0007
-const val TICK_BEFORE_FLASHBANG_DECAY = 30
+const val TICK_BEFORE_FLASHBANG_DECAY_BASE_VALUE = 20
