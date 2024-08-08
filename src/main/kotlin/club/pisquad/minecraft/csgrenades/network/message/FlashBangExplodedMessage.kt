@@ -49,11 +49,6 @@ class FlashBangExplodedMessage(
                     player.level()
                 )
             FlashBangEffect.render(newValue)
-
-
-//            val context = ctx.get()
-//            context.direction.toString()
-//            Logger.info("Handling message $msg")
         }
 
     }
@@ -62,7 +57,7 @@ class FlashBangExplodedMessage(
 private enum class FlashBangBlockingType {
     NO_BLOCKING,
     FULLY_BLOCKING,
-    PARTIAL_BLOCKING, // If the block is a transparent block
+    PARTIAL_BLOCKING,
 }
 
 private fun getFlashBangBlockingType(blockState: BlockState): FlashBangBlockingType {
@@ -130,6 +125,6 @@ private fun getDistanceFactor(distance: Double): Double {
 }
 
 private fun getAngleFactor(angle: Double): Double {
+    if (angle < 0.2) return 0.0
     return log(angle + 1.0, 100.0).times(4)
-
 }
