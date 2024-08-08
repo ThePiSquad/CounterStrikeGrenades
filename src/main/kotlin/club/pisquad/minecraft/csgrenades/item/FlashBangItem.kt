@@ -1,6 +1,9 @@
 package club.pisquad.minecraft.csgrenades.item
 
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
+import club.pisquad.minecraft.csgrenades.PLAYER_EYESIGHT_OFFSET
+import club.pisquad.minecraft.csgrenades.STRONG_THROW_PLAYER_SPEED_SCALE
+import club.pisquad.minecraft.csgrenades.WEAK_THROW_PLAYER_SPEED_SCALE
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownMessage
@@ -16,7 +19,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.div
 import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 
 
@@ -30,7 +32,8 @@ class FlashBangItem(properties: Properties) : Item(properties) {
             return super.use(level, player, usedHand)
         }
 
-        val speed = player.deltaMovement.div(2.0).plus(player.lookAngle.normalize().scale(GrenadeThrownType.Weak.speed))
+        val speed = player.deltaMovement.scale(WEAK_THROW_PLAYER_SPEED_SCALE)
+            .plus(player.lookAngle.normalize().scale(GrenadeThrownType.Weak.speed))
             .length()
 
         val playerPosition = player.position()
@@ -40,7 +43,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
                 speed,
                 GrenadeType.FLASH_BANG,
                 GrenadeThrownType.Weak,
-                Vec3(playerPosition.x, playerPosition.y + 1.2, playerPosition.z),
+                Vec3(playerPosition.x, playerPosition.y + PLAYER_EYESIGHT_OFFSET, playerPosition.z),
                 Rotations(player.xRot, player.yRot, 0.0f),
             )
         )
@@ -53,7 +56,8 @@ class FlashBangItem(properties: Properties) : Item(properties) {
             return false
         }
         val speed =
-            player.deltaMovement.scale(1.3).plus(player.lookAngle.normalize().scale(GrenadeThrownType.Strong.speed))
+            player.deltaMovement.scale(STRONG_THROW_PLAYER_SPEED_SCALE)
+                .plus(player.lookAngle.normalize().scale(GrenadeThrownType.Strong.speed))
                 .length()
         val playerPosition = player.position()
 
@@ -62,7 +66,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
                 speed,
                 GrenadeType.FLASH_BANG,
                 GrenadeThrownType.Strong,
-                Vec3(playerPosition.x, playerPosition.y + 1.2, playerPosition.z),
+                Vec3(playerPosition.x, playerPosition.y + PLAYER_EYESIGHT_OFFSET, playerPosition.z),
                 Rotations(player.xRot, player.yRot, 0.0f),
             )
         )

@@ -36,7 +36,6 @@ object CounterStrikeGrenades {
         ModEntities.ENTITIES.register(KotlinModLoadingContext.get().getKEventBus())
         ModItems.ITEMS.register(KotlinModLoadingContext.get().getKEventBus())
 
-        var messageTypeCount = 0
         CsGrenadePacketHandler.registerMessage()
     }
 

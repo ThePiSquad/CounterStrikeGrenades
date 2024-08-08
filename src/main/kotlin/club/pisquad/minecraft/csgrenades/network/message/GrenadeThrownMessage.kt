@@ -1,5 +1,7 @@
 package club.pisquad.minecraft.csgrenades.network.message
 
+import club.pisquad.minecraft.csgrenades.STRONG_THROW_SPEED
+import club.pisquad.minecraft.csgrenades.WEAK_THROW_SPEED
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.registery.ModEntities
 import club.pisquad.minecraft.csgrenades.serializer.RotationSerializer
@@ -17,8 +19,8 @@ import java.util.function.Supplier
 
 @Serializable
 enum class GrenadeThrownType(val speed: Double) {
-    Strong(1.3),
-    Weak(0.4)
+    Strong(STRONG_THROW_SPEED),
+    Weak(WEAK_THROW_SPEED)
 }
 
 @Serializable
@@ -27,7 +29,7 @@ class GrenadeThrownMessage(
     val grenadeType: GrenadeType,
     val thrownType: GrenadeThrownType,
     @Serializable(with = Vec3Serializer::class) val position: Vec3,
-    @Serializable(with = RotationSerializer::class) val rotations: Rotations,
+    @Serializable(with = RotationSerializer::class) val rotation: Rotations,
 ) {
     companion object {
 //        private val Logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":message:grenadeThrownMessage")
@@ -56,8 +58,15 @@ class GrenadeThrownMessage(
 
             val grenadeEntity = ModEntities.FLASH_BANG_ENTITY.get().create(serverLevel) ?: return
 
-            grenadeEntity.setPos(sender.x, sender.y + 1.62, sender.z)
-            grenadeEntity.shootFromRotation(sender, sender.xRot, sender.yRot, 0.0f, msg.speed.toFloat(), 0f)
+            grenadeEntity.setPos(msg.position)
+            grenadeEntity.shootFromRotation(
+                sender,
+                msg.rotation.x,
+                msg.rotation.y,
+                msg.rotation.z,
+                msg.speed.toFloat(),
+                0f
+            )
 
             val summonResult = serverLevel.addFreshEntity(grenadeEntity)
 //            Logger.info("Add grenade entity result $summonResult")

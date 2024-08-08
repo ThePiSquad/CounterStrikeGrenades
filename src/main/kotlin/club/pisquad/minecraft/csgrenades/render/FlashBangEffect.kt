@@ -2,6 +2,7 @@ package club.pisquad.minecraft.csgrenades.render
 
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.FLASHBANG_EFFECT_KEY
+import club.pisquad.minecraft.csgrenades.FLASHBANG_EFFECT_TAG_DECAY_RATE
 import net.minecraft.client.Minecraft
 import net.minecraft.util.FastColor
 import net.minecraftforge.api.distmarker.Dist
@@ -56,7 +57,11 @@ object FlashBangEffect {
             return
         }
 
-        tag.putDouble(FLASHBANG_EFFECT_KEY, max(flashbangEffect - 0.001, 0.0))
+        tag.putDouble(FLASHBANG_EFFECT_KEY, max(flashbangEffect - FLASHBANG_EFFECT_TAG_DECAY_RATE, 0.0))
 
     }
+}
+
+private fun calculateFlashBangEffect(value: Double) {
+    
 }
