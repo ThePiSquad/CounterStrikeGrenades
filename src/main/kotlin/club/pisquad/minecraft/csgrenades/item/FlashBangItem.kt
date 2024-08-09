@@ -5,8 +5,8 @@ import club.pisquad.minecraft.csgrenades.STRONG_THROW_PLAYER_SPEED_SCALE
 import club.pisquad.minecraft.csgrenades.WEAK_THROW_PLAYER_SPEED_SCALE
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
-import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownMessage
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrowType
+import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownMessage
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.core.Rotations
 import net.minecraft.world.InteractionHand
@@ -18,7 +18,6 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 
 
 class FlashBangItem(properties: Properties) : Item(properties) {
@@ -33,7 +32,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
         }
 
         val speed = player.deltaMovement.scale(WEAK_THROW_PLAYER_SPEED_SCALE)
-            .plus(player.lookAngle.normalize().scale(GrenadeThrowType.Weak.speed))
+            .add(player.lookAngle.normalize().scale(GrenadeThrowType.Weak.speed))
             .length()
 
         val playerPosition = player.position()
@@ -57,7 +56,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
         }
         val speed =
             player.deltaMovement.scale(STRONG_THROW_PLAYER_SPEED_SCALE)
-                .plus(player.lookAngle.normalize().scale(GrenadeThrowType.Strong.speed))
+                .add(player.lookAngle.normalize().scale(GrenadeThrowType.Strong.speed))
                 .length()
         val playerPosition = player.position()
 

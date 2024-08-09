@@ -2,6 +2,7 @@ package club.pisquad.minecraft.csgrenades.render
 
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
+import club.pisquad.minecraft.csgrenades.toVec3i
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
 import net.minecraft.client.resources.sounds.SoundInstance
@@ -15,9 +16,6 @@ import net.minecraftforge.client.event.RenderGuiOverlayEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.minus
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.toVec3i
 import kotlin.math.max
 import kotlin.math.min
 
@@ -39,14 +37,14 @@ data class FlashBangEffectData(
         private fun getBlockingFactor(flashbangPos: Vec3, playerEyePos: Vec3): Double {
 
             var blockingFactor = 1.0
-            val playerToFlashBangVec = flashbangPos.minus(playerEyePos)
+            val playerToFlashBangVec = flashbangPos.add(playerEyePos.reverse())
             val direction = playerToFlashBangVec.normalize()
             val level = Minecraft.getInstance().level ?: return blockingFactor
 
 //
             for (i in 1..playerToFlashBangVec.length().toInt()) {
                 val blockState =
-                    level.getBlockState(BlockPos(playerEyePos.plus(direction.scale(i.toDouble())).toVec3i()))
+                    level.getBlockState(BlockPos(playerEyePos.add(direction.scale(i.toDouble())).toVec3i()))
                 blockingFactor -= getBlockingFactorDelta(blockState)
                 if (blockingFactor <= 0.0) {
                     return 0.0

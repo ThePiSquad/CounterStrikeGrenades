@@ -11,8 +11,6 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.NetworkEvent
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.minus
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.acos
@@ -45,17 +43,17 @@ class FlashBangExplodedMessage(
 
             val player = Minecraft.getInstance().player ?: return
 
-            val playerToFlashVec = msg.position.minus(player.position())
+            val playerToFlashVec = msg.position.add(player.position().reverse())
 
 
-            val angle = acos(player.lookAngle.dot(playerToFlashVec.normalize())).times(180).div(PI)
+            val angle = acos(player.lookAngle.dot(playerToFlashVec.normalize())).times(180).times(1/PI)
 
             FlashBangEffect.render(
                 FlashBangEffectData.create(
                     angle,
                     playerToFlashVec.length(),
                     msg.position,
-                    player.position().plus(Vec3(0.0, 1.62, 0.0))
+                    player.position().add(Vec3(0.0, 1.62, 0.0))
                 )
             )
         }

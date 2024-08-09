@@ -17,7 +17,6 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.PacketDistributor
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.div
 import kotlin.math.sqrt
 
 class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
@@ -86,7 +85,7 @@ class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
             this.setPos(this.xOld, this.yOld, this.zOld)
         }
 
-        this.deltaMovement = this.deltaMovement.div(2.0)
+        this.deltaMovement = this.deltaMovement.scale(0.5)
 
         this.playSound(ModSoundEvents.GRENADE_HIT.get(), 1f, 1f)
     }

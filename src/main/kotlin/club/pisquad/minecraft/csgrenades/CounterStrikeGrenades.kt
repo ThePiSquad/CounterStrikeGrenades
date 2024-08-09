@@ -1,6 +1,7 @@
 package club.pisquad.minecraft.csgrenades
 
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
+import club.pisquad.minecraft.csgrenades.registery.ModCreativeTabs
 import club.pisquad.minecraft.csgrenades.registery.ModEntities
 import club.pisquad.minecraft.csgrenades.registery.ModItems
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
@@ -35,7 +36,7 @@ object CounterStrikeGrenades {
         ModEntities.ENTITIES.register(KotlinModLoadingContext.get().getKEventBus())
         ModItems.ITEMS.register(KotlinModLoadingContext.get().getKEventBus())
         ModSoundEvents.register(KotlinModLoadingContext.get().getKEventBus())
-        
+
 
         CsGrenadePacketHandler.registerMessage()
     }
@@ -48,6 +49,7 @@ object CounterStrikeGrenades {
     private fun onClientSetup(event: FMLClientSetupEvent) {
         Logger.log(Level.INFO, "Initializing client...")
         KotlinModLoadingContext.get().getKEventBus().addListener(FlashBangEffect::tick)
+        KotlinModLoadingContext.get().getKEventBus().addListener(ModCreativeTabs::onCreativeTabBuildContents)
 
     }
 
