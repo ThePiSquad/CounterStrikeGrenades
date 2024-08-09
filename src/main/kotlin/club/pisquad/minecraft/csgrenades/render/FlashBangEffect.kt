@@ -1,6 +1,7 @@
 package club.pisquad.minecraft.csgrenades.render
 
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
+import club.pisquad.minecraft.csgrenades.helper.TickHelper
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import club.pisquad.minecraft.csgrenades.toVec3i
 import net.minecraft.client.Minecraft
@@ -13,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RenderGuiOverlayEvent
-import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import kotlin.math.max
@@ -27,7 +27,6 @@ data class FlashBangEffectData(
     val blockingFactor: Double,
 ) {
     val fadeOutTime: Double = totalEffectTime - fullyBlindedTime
-
 
     companion object {
         private fun getDistanceFactor(distance: Double): Double {
@@ -90,26 +89,30 @@ data class FlashBangEffectData(
 
 @Mod.EventBusSubscriber(modid = CounterStrikeGrenades.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object FlashBangEffect {
-    private var tickCount = 0
-
+    private const val TICK_HELPER_KEY = "FLASHBANG_EFFECT"
     private var rendering: Boolean = false
 
     private var effectData: FlashBangEffectData? = null
 
     private var soundInstance: SoundInstance? = null
 
-//    private var oldSourceVolume: Float = 0f
+    init {
+        TickHelper.create(TICK_HELPER_KEY)
+    }
+
 
     fun render(effectData: FlashBangEffectData) {
         if (effectData.totalEffectTime <= 0.0) return
 
         if (rendering) {
-            if (this.effectData!!.totalEffectTime - getTimeFromTickCount(tickCount.toDouble()) < effectData.totalEffectTime) {
+            if (this.effectData!!.totalEffectTime - getTimeFromTickCount(
+                    TickHelper.get(TICK_HELPER_KEY).toDouble()
+                ) < effectData.totalEffectTime
+            ) {
                 renderFinished()
                 renderStart(effectData)
             }
         } else {
-
             renderStart(effectData)
         }
     }
@@ -117,6 +120,7 @@ object FlashBangEffect {
     private fun renderStart(effectData: FlashBangEffectData) {
         rendering = true
         this.effectData = effectData
+        TickHelper.reset(TICK_HELPER_KEY)
 
         soundInstance = EntityBoundSoundInstance(
             ModSoundEvents.FLASHBANG_EXPLOSION_RING.get(),
@@ -132,18 +136,21 @@ object FlashBangEffect {
     }
 
     private fun renderFinished() {
-        tickCount = 0
+        TickHelper.reset(TICK_HELPER_KEY)
         rendering = false
         this.effectData = null
         Minecraft.getInstance().soundManager.stop(soundInstance!!)
         soundInstance = null
-//        Minecraft.getInstance().soundManager.updateSourceVolume(SoundSource.AMBIENT, oldSourceVolume)
     }
 
     @SubscribeEvent
     fun renderOverlay(event: RenderGuiOverlayEvent.Pre) {
         if (!rendering) return
 
+        if (getTimeFromTickCount(TickHelper.get(TICK_HELPER_KEY).toDouble()) > effectData!!.totalEffectTime) {
+            renderFinished()
+            return
+        }
         val graphics = event.guiGraphics
         val partialTick = event.partialTick
 
@@ -163,22 +170,10 @@ object FlashBangEffect {
         )
     }
 
-    @SubscribeEvent
-    fun tick(event: TickEvent.ClientTickEvent) {
-//        if (event.phase == TickEvent.Phase.END) return
-        if (effectData == null || !rendering) return
-        tickCount++
-        if (getTimeFromTickCount(tickCount + 0.0) > effectData!!.totalEffectTime) {
-            renderFinished()
-            return
-        }
-    }
-
-
     private fun getGuiOverlayOpacity(partialTick: Float): Int {
         if (!rendering || effectData == null) return 0
 
-        val timeSinceBegin = getTimeFromTickCount(tickCount + partialTick.toDouble())
+        val timeSinceBegin = getTimeFromTickCount(TickHelper.get(TICK_HELPER_KEY) + partialTick.toDouble())
         if (timeSinceBegin < effectData!!.fullyBlindedTime) {
             return 255
         }

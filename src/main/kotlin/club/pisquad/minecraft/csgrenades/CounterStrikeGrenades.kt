@@ -1,5 +1,6 @@
 package club.pisquad.minecraft.csgrenades
 
+import club.pisquad.minecraft.csgrenades.helper.TickHelper
 import club.pisquad.minecraft.csgrenades.item.PlayerInteractEventHandler
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.registery.ModCreativeTabs
@@ -7,6 +8,7 @@ import club.pisquad.minecraft.csgrenades.registery.ModEntities
 import club.pisquad.minecraft.csgrenades.registery.ModItems
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import club.pisquad.minecraft.csgrenades.render.FlashBangEffect
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
@@ -38,7 +40,7 @@ object CounterStrikeGrenades {
         ModItems.ITEMS.register(KotlinModLoadingContext.get().getKEventBus())
         ModSoundEvents.register(KotlinModLoadingContext.get().getKEventBus())
 
-
+        MinecraftForge.EVENT_BUS.addListener(TickHelper::tickHandler)
         CsGrenadePacketHandler.registerMessage()
     }
 
@@ -49,11 +51,11 @@ object CounterStrikeGrenades {
      */
     private fun onClientSetup(event: FMLClientSetupEvent) {
         Logger.log(Level.INFO, "Initializing client...")
-        val eventBus = KotlinModLoadingContext.get().getKEventBus()
-        eventBus.addListener(FlashBangEffect::tick)
-        eventBus.addListener(ModCreativeTabs::onCreativeTabBuildContents)
-        eventBus.addListener(PlayerInteractEventHandler::onPlayerInteract)
 
+        val eventBus = KotlinModLoadingContext.get().getKEventBus()
+
+        eventBus.addListener(ModCreativeTabs::onCreativeTabBuildContents)
+//        eventBus.addListener(PlayerInteractEventHandler::onPlayerInteract)
     }
 
     /**

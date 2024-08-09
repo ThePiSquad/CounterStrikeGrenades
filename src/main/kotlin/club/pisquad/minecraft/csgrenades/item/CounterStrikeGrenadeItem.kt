@@ -2,6 +2,7 @@ package club.pisquad.minecraft.csgrenades.item
 
 import club.pisquad.minecraft.csgrenades.*
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
+import club.pisquad.minecraft.csgrenades.helper.TickHelper
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrowType
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownMessage
@@ -65,12 +66,15 @@ open class CounterStrikeGrenadeItem(properties: Properties) : Item(properties) {
 
 @Mod.EventBusSubscriber(modid = CounterStrikeGrenades.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object PlayerInteractEventHandler {
-    private var tickCount: Int = 0
+    private const val TICK_HELPER_KEY = "GRENADE_THROW_COOLDOWN"
+    init {
+        TickHelper.create(TICK_HELPER_KEY)
+    }
 
     @SubscribeEvent
     fun onPlayerInteract(event: PlayerInteractEvent) {
         if (!event.level.isClientSide) return
-        if (tickCount < GRENADE_THROW_COOLDOWN) return
+        if (TickHelper.get(TICK_HELPER_KEY) < GRENADE_THROW_COOLDOWN) return
 
         val itemInHand = event.entity.getItemInHand(event.hand).item
         if (itemInHand !is CounterStrikeGrenadeItem) return
@@ -91,17 +95,10 @@ object PlayerInteractEventHandler {
                 itemInHand.throwAction(event.entity, grenadeType, GrenadeThrowType.Weak)
             }
         }
-        tickCount = 0
-    }
-
-    @SubscribeEvent
-    fun tick(event: TickEvent.ClientTickEvent) {
-        tickCount++
+        TickHelper.reset(TICK_HELPER_KEY)
     }
 
     fun register(bus: IEventBus) {
         bus.register(::onPlayerInteract)
-        bus.register(::tick)
-
     }
 }
