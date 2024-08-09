@@ -103,11 +103,15 @@ object FlashBangEffect {
     fun render(effectData: FlashBangEffectData) {
         if (effectData.totalEffectTime <= 0.0) return
 
-        if (rendering && this.effectData!!.totalEffectTime - getTimeFromTickCount(tickCount.toDouble()) < effectData.totalEffectTime) {
-            renderFinished()
-        }
-        renderStart(effectData)
+        if (rendering) {
+            if (this.effectData!!.totalEffectTime - getTimeFromTickCount(tickCount.toDouble()) < effectData.totalEffectTime) {
+                renderFinished()
+                renderStart(effectData)
+            }
+        } else {
 
+            renderStart(effectData)
+        }
     }
 
     private fun renderStart(effectData: FlashBangEffectData) {
