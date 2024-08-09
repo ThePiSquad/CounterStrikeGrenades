@@ -16,9 +16,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
@@ -67,6 +65,7 @@ open class CounterStrikeGrenadeItem(properties: Properties) : Item(properties) {
 @Mod.EventBusSubscriber(modid = CounterStrikeGrenades.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object PlayerInteractEventHandler {
     private const val TICK_HELPER_KEY = "GRENADE_THROW_COOLDOWN"
+
     init {
         TickHelper.create(TICK_HELPER_KEY)
     }
@@ -96,9 +95,5 @@ object PlayerInteractEventHandler {
             }
         }
         TickHelper.reset(TICK_HELPER_KEY)
-    }
-
-    fun register(bus: IEventBus) {
-        bus.register(::onPlayerInteract)
     }
 }
