@@ -60,7 +60,7 @@ class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
                     PacketDistributor.ALL.noArg(),
                     FlashBangExplodedMessage(this.position())
                 )
-                this.playSound(ModSoundEvents.FLASHBANG_EXPLODE.get(), 1.5f, 1f)
+                this.playSound(ModSoundEvents.FLASHBANG_EXPLODE.get(), 10f, 1f)
                 this.kill()
 
             }

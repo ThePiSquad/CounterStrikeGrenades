@@ -1,6 +1,5 @@
 package club.pisquad.minecraft.csgrenades.item
 
-import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.PLAYER_EYESIGHT_OFFSET
 import club.pisquad.minecraft.csgrenades.STRONG_THROW_PLAYER_SPEED_SCALE
 import club.pisquad.minecraft.csgrenades.WEAK_THROW_PLAYER_SPEED_SCALE
@@ -19,13 +18,11 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.plus
 
 
 class FlashBangItem(properties: Properties) : Item(properties) {
-//    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_item")
+    //    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_item")
     private var isHoldingBefore: Boolean = false
 
     override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
