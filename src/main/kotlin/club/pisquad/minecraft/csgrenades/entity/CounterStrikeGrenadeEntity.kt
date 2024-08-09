@@ -7,6 +7,7 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
@@ -35,6 +36,9 @@ abstract class CounterStrikeGrenadeEntity(
 
 
     override fun onHitEntity(result: EntityHitResult) {
+        if (this.owner == null) return
+        val player = this.owner as Player
+        result.entity.hurt(player.damageSources().generic(), 1f)
     }
 
     override fun tick() {

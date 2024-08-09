@@ -30,7 +30,6 @@ class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
                 )
                 this.playSound(ModSoundEvents.FLASHBANG_EXPLODE.get(), 10f, 1f)
                 this.kill()
-
             }
         }
 

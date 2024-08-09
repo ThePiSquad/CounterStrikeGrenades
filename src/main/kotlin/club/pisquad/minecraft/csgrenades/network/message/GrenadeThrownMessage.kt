@@ -5,6 +5,7 @@ import club.pisquad.minecraft.csgrenades.WEAK_THROW_SPEED
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.registery.ModEntities
 import club.pisquad.minecraft.csgrenades.serializer.RotationSerializer
+import club.pisquad.minecraft.csgrenades.serializer.UUIDSerializer
 import club.pisquad.minecraft.csgrenades.serializer.Vec3Serializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -15,6 +16,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.NetworkEvent
+import java.util.*
 import java.util.function.Supplier
 
 @Serializable
@@ -25,9 +27,9 @@ enum class GrenadeThrowType(val speed: Double) {
 
 @Serializable
 class GrenadeThrownMessage(
+    @Serializable(with = UUIDSerializer::class) val ownerUUID: UUID,
     val speed: Double,
     val grenadeType: GrenadeType,
-    val thrownType: GrenadeThrowType,
     @Serializable(with = Vec3Serializer::class) val position: Vec3,
     @Serializable(with = RotationSerializer::class) val rotation: Rotations,
 ) {
@@ -57,6 +59,7 @@ class GrenadeThrownMessage(
 
 
             val grenadeEntity = ModEntities.FLASH_BANG_ENTITY.get().create(serverLevel) ?: return
+            grenadeEntity.owner = context.sender?.level()?.getPlayerByUUID(msg.ownerUUID)
 
             grenadeEntity.setPos(msg.position)
             grenadeEntity.shootFromRotation(
