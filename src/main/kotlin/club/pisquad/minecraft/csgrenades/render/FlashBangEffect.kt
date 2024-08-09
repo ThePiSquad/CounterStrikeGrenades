@@ -103,8 +103,14 @@ object FlashBangEffect {
     fun render(effectData: FlashBangEffectData) {
         if (effectData.totalEffectTime <= 0.0) return
 
-        tickCount = 0
-//        shouldDecay = false
+        if (rendering && this.effectData!!.totalEffectTime - getTimeFromTickCount(tickCount.toDouble()) < effectData.totalEffectTime) {
+            renderFinished()
+        }
+        renderStart(effectData)
+
+    }
+
+    private fun renderStart(effectData: FlashBangEffectData) {
         rendering = true
         this.effectData = effectData
 
@@ -118,7 +124,7 @@ object FlashBangEffect {
         )
         val soundManager = Minecraft.getInstance().soundManager
         soundManager.play(soundInstance!!)
-//        oldSourceVolume = Minecraft.getInstance().options.getSoundSourceVolume(SoundSource.AMBIENT)
+
     }
 
     private fun renderFinished() {

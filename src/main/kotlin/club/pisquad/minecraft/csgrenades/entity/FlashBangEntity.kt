@@ -21,7 +21,7 @@ import kotlin.math.sqrt
 
 class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
     CounterStrikeGrenadeEntity(pEntityType, pLevel) {
-    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_entity")
+//    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_entity")
     private var speed: Float = 0.0f
 
     companion object {
@@ -68,7 +68,7 @@ class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
     }
 
     override fun onHitBlock(result: BlockHitResult) {
-        logger.info("Grenade[@$this] hit block at ${result.blockPos}")
+//        logger.info("Grenade[@$this] hit block at ${result.blockPos}")
         this.deltaMovement = when (result.direction) {
             Direction.UP, Direction.DOWN -> Vec3(deltaMovement.x, -deltaMovement.y, deltaMovement.z)
 
