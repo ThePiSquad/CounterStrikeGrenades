@@ -18,7 +18,7 @@ import net.minecraftforge.network.NetworkEvent
 import java.util.function.Supplier
 
 @Serializable
-enum class GrenadeThrownType(val speed: Double) {
+enum class GrenadeThrowType(val speed: Double) {
     Strong(STRONG_THROW_SPEED),
     Weak(WEAK_THROW_SPEED)
 }
@@ -27,7 +27,7 @@ enum class GrenadeThrownType(val speed: Double) {
 class GrenadeThrownMessage(
     val speed: Double,
     val grenadeType: GrenadeType,
-    val thrownType: GrenadeThrownType,
+    val thrownType: GrenadeThrowType,
     @Serializable(with = Vec3Serializer::class) val position: Vec3,
     @Serializable(with = RotationSerializer::class) val rotation: Rotations,
 ) {

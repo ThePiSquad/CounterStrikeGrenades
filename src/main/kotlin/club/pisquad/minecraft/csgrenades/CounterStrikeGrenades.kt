@@ -35,6 +35,7 @@ object CounterStrikeGrenades {
         ModEntities.ENTITIES.register(KotlinModLoadingContext.get().getKEventBus())
         ModItems.ITEMS.register(KotlinModLoadingContext.get().getKEventBus())
         ModSoundEvents.register(KotlinModLoadingContext.get().getKEventBus())
+        
 
         CsGrenadePacketHandler.registerMessage()
     }

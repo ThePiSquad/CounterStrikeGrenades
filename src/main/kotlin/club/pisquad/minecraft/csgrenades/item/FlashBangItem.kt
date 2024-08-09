@@ -6,7 +6,7 @@ import club.pisquad.minecraft.csgrenades.WEAK_THROW_PLAYER_SPEED_SCALE
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownMessage
-import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownType
+import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrowType
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.core.Rotations
 import net.minecraft.world.InteractionHand
@@ -33,7 +33,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
         }
 
         val speed = player.deltaMovement.scale(WEAK_THROW_PLAYER_SPEED_SCALE)
-            .plus(player.lookAngle.normalize().scale(GrenadeThrownType.Weak.speed))
+            .plus(player.lookAngle.normalize().scale(GrenadeThrowType.Weak.speed))
             .length()
 
         val playerPosition = player.position()
@@ -42,7 +42,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
             GrenadeThrownMessage(
                 speed,
                 GrenadeType.FLASH_BANG,
-                GrenadeThrownType.Weak,
+                GrenadeThrowType.Weak,
                 Vec3(playerPosition.x, playerPosition.y + PLAYER_EYESIGHT_OFFSET, playerPosition.z),
                 Rotations(player.xRot, player.yRot, 0.0f),
             )
@@ -57,7 +57,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
         }
         val speed =
             player.deltaMovement.scale(STRONG_THROW_PLAYER_SPEED_SCALE)
-                .plus(player.lookAngle.normalize().scale(GrenadeThrownType.Strong.speed))
+                .plus(player.lookAngle.normalize().scale(GrenadeThrowType.Strong.speed))
                 .length()
         val playerPosition = player.position()
 
@@ -65,7 +65,7 @@ class FlashBangItem(properties: Properties) : Item(properties) {
             GrenadeThrownMessage(
                 speed,
                 GrenadeType.FLASH_BANG,
-                GrenadeThrownType.Strong,
+                GrenadeThrowType.Strong,
                 Vec3(playerPosition.x, playerPosition.y + PLAYER_EYESIGHT_OFFSET, playerPosition.z),
                 Rotations(player.xRot, player.yRot, 0.0f),
             )
