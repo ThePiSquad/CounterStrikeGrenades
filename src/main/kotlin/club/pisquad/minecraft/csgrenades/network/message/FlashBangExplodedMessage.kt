@@ -45,7 +45,6 @@ class FlashBangExplodedMessage(
             val flashbangEntity = Minecraft.getInstance().level?.getEntity(msg.entityId) ?: return
 
             val playerToFlashVec = msg.position.add(player.position().reverse())
-            val distance = playerToFlashVec.length()
 
             val angle = acos(player.lookAngle.dot(playerToFlashVec.normalize())).times(180).times(1 / PI)
 

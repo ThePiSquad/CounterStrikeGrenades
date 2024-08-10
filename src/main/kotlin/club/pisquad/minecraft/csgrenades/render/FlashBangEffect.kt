@@ -89,7 +89,7 @@ data class FlashBangEffectData(
                 fullyBlindedTime = fullyBlindedTime,
                 totalEffectTime = totalEffectTime,
                 flashbangPos = flashbangPos,
-                ringVolume = (0.3f.times(distanceFactor).times(0.5)).toFloat(),
+                ringVolume = SoundUtils.getVolumeFromDistance(distance, SoundTypes.FLASHBANG_RING).toFloat(),
                 blockingFactor = blockingFactor
             )
         }

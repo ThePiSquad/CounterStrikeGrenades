@@ -1,15 +1,14 @@
 package club.pisquad.minecraft.csgrenades.network.message
 
+import club.pisquad.minecraft.csgrenades.SoundTypes
+import club.pisquad.minecraft.csgrenades.SoundUtils
 import club.pisquad.minecraft.csgrenades.helper.SmokeRenderHelper
-import club.pisquad.minecraft.csgrenades.registery.ModParticles
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import club.pisquad.minecraft.csgrenades.serializer.Vec3Serializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.minecraft.client.Minecraft
-import net.minecraft.client.multiplayer.ClientLevel
-import net.minecraft.client.particle.ParticleEngine
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.sounds.SoundSource
@@ -49,9 +48,18 @@ class SmokeEmittedMessage(
             val soundManager = Minecraft.getInstance().soundManager
             val soundEvent =
                 if (distance > 15) ModSoundEvents.SMOKE_EXPLODE_DISTANT.get() else ModSoundEvents.SMOKE_EMIT.get()
+            val soundType =
+                if (distance > 15) SoundTypes.SMOKE_GRENADE_EXPLODE_DISTANT else SoundTypes.SMOKE_GRENADE_EMIT
             val entity = level.getEntity(msg.entityId) ?: return
 
-            val soundInstance = EntityBoundSoundInstance(soundEvent, SoundSource.AMBIENT, 0.1f, 1f, entity, 0)
+            val soundInstance = EntityBoundSoundInstance(
+                soundEvent,
+                SoundSource.AMBIENT,
+                SoundUtils.getVolumeFromDistance(distance, soundType).toFloat(),
+                1f,
+                entity,
+                0
+            )
             soundManager.play(soundInstance)
 
             // Particles
