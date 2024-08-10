@@ -10,3 +10,6 @@ const val STRONG_THROW_SPEED: Double = 1.3
 const val WEAK_THROW_SPEED: Double = 0.4
 const val STRONG_THROW_PLAYER_SPEED_FACTOR: Double = 1.3
 const val WEAK_THROW_PLAYER_SPEED_FACTOR: Double = 0.5
+
+// SMOKE GRENADES
+const val SMOKE_GRENADE_RADIUS: Int = 3 // Should be 2.74 in Counter Strike, but this is Minecraft
