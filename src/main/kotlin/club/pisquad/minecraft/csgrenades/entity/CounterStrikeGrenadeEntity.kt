@@ -1,11 +1,17 @@
 package club.pisquad.minecraft.csgrenades.entity
 
+import club.pisquad.minecraft.csgrenades.SoundTypes
+import club.pisquad.minecraft.csgrenades.SoundUtils
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
+import net.minecraft.client.Minecraft
+import net.minecraft.client.multiplayer.ClientLevel
+import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
 import net.minecraft.core.Direction
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
@@ -58,10 +64,25 @@ abstract class CounterStrikeGrenadeEntity(
 
     }
 
+    /**
+     * Called when the entity is added to the world.
+     *
+     * This function plays the sound effect of a grenade being thrown when the entity is added to the world.
+     *
+     * @return None
+     */
     override fun onAddedToWorld() {
-        this.playSound(ModSoundEvents.GRENADE_THROW.get(), 1f, 1f)
+        this.playSound(ModSoundEvents.GRENADE_THROW.get(), 0.2f, 1f)
     }
 
+    /**
+     * Handles the bounce logic for custom grenades when they hit a block.
+     *
+     * This function updates the entity's movement and position based on the block hit result,
+     * simulating a bouncing effect. It also plays a sound effect when the entity hits a block on the client side.
+     *
+     * @param result The block hit result.
+     */
     override fun onHitBlock(result: BlockHitResult) {
 //        logger.info("Grenade[@$this] hit block at ${result.blockPos}")
         if (isLanded) return
@@ -84,17 +105,33 @@ abstract class CounterStrikeGrenadeEntity(
 
         this.deltaMovement = this.deltaMovement.scale(0.5)
 
-        this.playSound(ModSoundEvents.GRENADE_HIT.get(), 1f, 1f)
+        // entity.playSound seems to have a relatively small hearable ange
+        // This function seems to be work fine when calling from server and client side?
+        // So I just make a test here
+        // (In integrated server, haven't tested on other configurations yet)
+        if (this.level() is ClientLevel) {
+            val player = Minecraft.getInstance().player!!
+            val distance = this.position().add(player.position().reverse()).length()
+            val soundInstance = EntityBoundSoundInstance(
+                ModSoundEvents.GRENADE_HIT.get(),
+                SoundSource.AMBIENT,
+                SoundUtils.getVolumeFromDistance(
+                    distance,
+                    SoundTypes.GRENADE_HIT
+                ).toFloat(),
+                1f,
+                this,
+                0
+            )
+            Minecraft.getInstance().soundManager.play(soundInstance)
+        }
 
         // fix: the entity will keep bouncing on the ground
         if (result.direction == Direction.UP && this.deltaMovement.length() < 0.05) {
             this.setPos(this.x, result.blockPos.y.toDouble() + 1, this.z)
             this.deltaMovement = Vec3.ZERO
             this.isLanded = true
-//            onLanding()
         }
     }
-
-//    abstract fun onLanding()
 
 }

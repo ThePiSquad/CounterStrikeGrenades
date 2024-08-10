@@ -4,7 +4,7 @@ import net.minecraft.core.Vec3i
 import net.minecraft.world.phys.Vec3
 
 /**
- *Since KFF is not mapping hte methods correctly
+ *Since KFF is not mapping those methods correctly
  */
 
 fun Vec3.toVec3i(): Vec3i {

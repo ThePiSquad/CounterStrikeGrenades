@@ -8,7 +8,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.minecraft.client.Minecraft
 import net.minecraft.network.FriendlyByteBuf
-import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.NetworkEvent
 import java.util.function.Supplier
@@ -19,6 +18,7 @@ import kotlin.math.acos
 
 @Serializable
 class FlashBangExplodedMessage(
+    val entityId: Int,
     @Serializable(with = Vec3Serializer::class) val position: Vec3
 ) {
     companion object {
@@ -42,14 +42,17 @@ class FlashBangExplodedMessage(
             }
 
             val player = Minecraft.getInstance().player ?: return
+            val flashbangEntity = Minecraft.getInstance().level?.getEntity(msg.entityId) ?: return
 
             val playerToFlashVec = msg.position.add(player.position().reverse())
+            val distance = playerToFlashVec.length()
 
+            val angle = acos(player.lookAngle.dot(playerToFlashVec.normalize())).times(180).times(1 / PI)
 
-            val angle = acos(player.lookAngle.dot(playerToFlashVec.normalize())).times(180).times(1/PI)
-
+            // Flashbang effect
             FlashBangEffect.render(
                 FlashBangEffectData.create(
+                    flashbangEntity,
                     angle,
                     playerToFlashVec.length(),
                     msg.position,
@@ -59,17 +62,4 @@ class FlashBangExplodedMessage(
         }
 
     }
-}
-
-private enum class FlashBangBlockingType {
-    NO_BLOCKING,
-    FULLY_BLOCKING,
-    PARTIAL_BLOCKING,
-}
-
-private fun getFlashBangBlockingType(blockState: BlockState): FlashBangBlockingType {
-    if (blockState.isAir) {
-        return FlashBangBlockingType.NO_BLOCKING
-    }
-    return if (blockState.canOcclude()) FlashBangBlockingType.FULLY_BLOCKING else FlashBangBlockingType.PARTIAL_BLOCKING
 }

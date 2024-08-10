@@ -27,9 +27,8 @@ class FlashBangEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLev
             if (this.tickCount > 1.6 * 20) {
                 CsGrenadePacketHandler.INSTANCE.send(
                     PacketDistributor.ALL.noArg(),
-                    FlashBangExplodedMessage(this.position())
+                    FlashBangExplodedMessage(this.id, this.position())
                 )
-                this.playSound(ModSoundEvents.FLASHBANG_EXPLODE.get(), 10f, 1f)
                 this.kill()
             }
         }

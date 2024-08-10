@@ -1,16 +1,17 @@
 package club.pisquad.minecraft.csgrenades.render
 
-import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
-import club.pisquad.minecraft.csgrenades.getTimeFromTickCount
+import club.pisquad.minecraft.csgrenades.*
 import club.pisquad.minecraft.csgrenades.helper.TickHelper
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
-import club.pisquad.minecraft.csgrenades.toVec3i
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
+import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.resources.sounds.SoundInstance
 import net.minecraft.core.BlockPos
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.FastColor
+import net.minecraft.util.RandomSource
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
@@ -21,6 +22,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 data class FlashBangEffectData(
+    val flashBangEntity: Entity,
     val fullyBlindedTime: Double,
     val totalEffectTime: Double,
     val flashbangPos: Vec3,
@@ -55,7 +57,13 @@ data class FlashBangEffectData(
         }
 
 
-        fun create(angle: Double, distance: Double, flashbangPos: Vec3, playerPos: Vec3): FlashBangEffectData {
+        fun create(
+            flashBangEntity: Entity,
+            angle: Double,
+            distance: Double,
+            flashbangPos: Vec3,
+            playerPos: Vec3
+        ): FlashBangEffectData {
             val distanceFactor = getDistanceFactor(distance)
             val blockingFactor = getBlockingFactor(flashbangPos, playerPos)
 
@@ -77,10 +85,11 @@ data class FlashBangEffectData(
 
 
             return FlashBangEffectData(
+                flashBangEntity,
                 fullyBlindedTime = fullyBlindedTime,
                 totalEffectTime = totalEffectTime,
                 flashbangPos = flashbangPos,
-                ringVolume = 0.8f.times(distanceFactor.toFloat()),
+                ringVolume = (0.3f.times(distanceFactor).times(0.5)).toFloat(),
                 blockingFactor = blockingFactor
             )
         }
@@ -95,7 +104,8 @@ object FlashBangEffect {
 
     private var effectData: FlashBangEffectData? = null
 
-    private var soundInstance: SoundInstance? = null
+    private var ringSoundInstance: SoundInstance? = null
+    private var explosionSoundInstance: SoundInstance? = null
 
     init {
         TickHelper.create(TICK_HELPER_KEY)
@@ -103,7 +113,23 @@ object FlashBangEffect {
 
 
     fun render(effectData: FlashBangEffectData) {
-        if (effectData.totalEffectTime <= 0.0) return
+        val soundManager = Minecraft.getInstance().soundManager
+        val distance = Minecraft.getInstance().player!!.position().distanceTo(effectData.flashbangPos)
+
+        // The flashbang entity was killed in previous procedure
+        explosionSoundInstance = SimpleSoundInstance(
+            ModSoundEvents.FLASHBANG_EXPLODE.get(),
+            SoundSource.AMBIENT,
+            SoundUtils.getVolumeFromDistance(distance, SoundTypes.FLASHBANG_EXPLODE).toFloat(),
+            1f,
+            RandomSource.create(),
+            effectData.flashbangPos.x,
+            effectData.flashbangPos.y,
+            effectData.flashbangPos.z
+        )
+        soundManager.play(explosionSoundInstance!!)
+
+        if (effectData.totalEffectTime <= 0.0) return // If the flashbang is blocked
 
         if (rendering) {
             if (this.effectData!!.totalEffectTime - getTimeFromTickCount(
@@ -123,7 +149,9 @@ object FlashBangEffect {
         this.effectData = effectData
         TickHelper.reset(TICK_HELPER_KEY)
 
-        soundInstance = EntityBoundSoundInstance(
+        val soundManager = Minecraft.getInstance().soundManager
+
+        ringSoundInstance = EntityBoundSoundInstance(
             ModSoundEvents.FLASHBANG_EXPLOSION_RING.get(),
             SoundSource.AMBIENT,
             effectData.ringVolume,
@@ -131,17 +159,15 @@ object FlashBangEffect {
             Minecraft.getInstance().player!!,
             0
         )
-        val soundManager = Minecraft.getInstance().soundManager
-        soundManager.play(soundInstance!!)
-
+        soundManager.play(ringSoundInstance!!)
     }
 
     private fun renderFinished() {
         TickHelper.reset(TICK_HELPER_KEY)
         rendering = false
         this.effectData = null
-        Minecraft.getInstance().soundManager.stop(soundInstance!!)
-        soundInstance = null
+        Minecraft.getInstance().soundManager.stop(ringSoundInstance!!)
+        ringSoundInstance = null
     }
 
     @SubscribeEvent

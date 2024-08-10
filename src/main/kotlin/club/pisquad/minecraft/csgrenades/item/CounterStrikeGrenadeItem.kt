@@ -32,7 +32,7 @@ open class CounterStrikeGrenadeItem(properties: Properties) : Item(properties) {
 
         if (isSelected) {
             if (!isHoldingBefore) {
-                entity.playSound(drawSound, 1.0f, 1.0f)
+                entity.playSound(drawSound, 0.2f, 1.0f)
                 isHoldingBefore = true
             }
         } else {

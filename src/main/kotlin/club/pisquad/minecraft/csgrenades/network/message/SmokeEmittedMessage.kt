@@ -51,7 +51,7 @@ class SmokeEmittedMessage(
                 if (distance > 15) ModSoundEvents.SMOKE_EXPLODE_DISTANT.get() else ModSoundEvents.SMOKE_EMIT.get()
             val entity = level.getEntity(msg.entityId) ?: return
 
-            val soundInstance = EntityBoundSoundInstance(soundEvent, SoundSource.AMBIENT, 1f, 1f, entity, 0)
+            val soundInstance = EntityBoundSoundInstance(soundEvent, SoundSource.AMBIENT, 0.1f, 1f, entity, 0)
             soundManager.play(soundInstance)
 
             // Particles
