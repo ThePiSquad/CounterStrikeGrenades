@@ -8,6 +8,7 @@ enum class SoundTypes(val initialVolume: Double, val hearableRange: Double) {
 
     // Flashbang
     FLASHBANG_EXPLODE(0.08, 80.0),
+    FLASHBANG_EXPLODE_DISTANT(0.3, 80.0),
     FLASHBANG_RING(0.02, 50.0),
 
     // Smoke grenades

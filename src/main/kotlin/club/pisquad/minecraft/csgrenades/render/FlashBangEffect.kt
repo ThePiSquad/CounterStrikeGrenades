@@ -116,11 +116,20 @@ object FlashBangEffect {
         val soundManager = Minecraft.getInstance().soundManager
         val distance = Minecraft.getInstance().player!!.position().distanceTo(effectData.flashbangPos)
 
+        val soundEvent = when {
+            distance <= 15 -> ModSoundEvents.FLASHBANG_EXPLODE.get()
+            else -> ModSoundEvents.FLASHBANG_EXPLODE_DISTANT.get()
+        }
+        val soundType = when {
+            distance <= 15 -> SoundTypes.FLASHBANG_EXPLODE
+            else -> SoundTypes.FLASHBANG_EXPLODE_DISTANT
+        }
+
         // The flashbang entity was killed in previous procedure
         explosionSoundInstance = SimpleSoundInstance(
-            ModSoundEvents.FLASHBANG_EXPLODE.get(),
+            soundEvent,
             SoundSource.AMBIENT,
-            SoundUtils.getVolumeFromDistance(distance, SoundTypes.FLASHBANG_EXPLODE).toFloat(),
+            SoundUtils.getVolumeFromDistance(distance, soundType).toFloat(),
             1f,
             RandomSource.create(),
             effectData.flashbangPos.x,

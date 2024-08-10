@@ -23,6 +23,12 @@
       "csgrenades:flashbang/flashbang_explode"
     ]
   },
+  "flashbang.explode_distant": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:flashbang/flashbang_explode_distant"
+    ]
+  },
   "flashbang.explosion_ring": {
     "category": "ambient",
     "sounds": [
