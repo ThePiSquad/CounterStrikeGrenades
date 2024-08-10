@@ -1,5 +1,6 @@
 package club.pisquad.minecraft.csgrenades.network.message
 
+import club.pisquad.minecraft.csgrenades.SMOKE_GRENADE_PARTICLE_COUNT
 import club.pisquad.minecraft.csgrenades.SMOKE_GRENADE_RADIUS
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import club.pisquad.minecraft.csgrenades.serializer.Vec3Serializer
@@ -15,7 +16,8 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.NetworkEvent
 import java.util.function.Supplier
-import kotlin.math.sqrt
+import kotlin.math.*
+import kotlin.random.Random
 
 @Serializable
 class SmokeEmittedMessage(
@@ -55,108 +57,35 @@ class SmokeEmittedMessage(
             soundManager.play(soundInstance)
 
             // Particles
-            spawnParticles(level, msg.position)
+            spawnSmokeParticles(level, msg.position)
 
         }
 
     }
 }
 
-private fun spawnParticles(level: ClientLevel, pos: Vec3) {
-//    level.addParticle(ParticleTypes.CLOUD, pos.x, pos.y, pos.z, 0.0, 0.0, 0.0)
-    val particleData =
+private fun spawnSmokeParticles(level: ClientLevel, pos: Vec3) {
+    for (i in 1..SMOKE_GRENADE_PARTICLE_COUNT) {
+        // GPT, my GOD
+
+        // Generate a random radius, theta, and phi
+        val r = SMOKE_GRENADE_RADIUS * Random.nextDouble().pow(1.0 / 3.0)  // cube root to ensure uniform distribution
+        val theta = Random.nextDouble(0.0, 2 * PI)  // Random angle between 0 and 2π
+        val phi = acos(2 * Random.nextDouble() - 1)  // Random angle between 0 and π
+
+        // Convert spherical coordinates to Cartesian coordinates
+        val x = r * sin(phi) * cos(theta) + pos.x
+        val y = r * sin(phi) * sin(theta) + pos.y
+        val z = r * cos(phi) + pos.z
+
         Minecraft.getInstance().particleEngine.createParticle(
             ParticleTypes.CAMPFIRE_COSY_SMOKE,
-            pos.x,
-            pos.y,
-            pos.z,
+            x,
+            y,
+            z,
             0.0,
             0.0,
             0.0
-        )
-            ?.scale(27.4f) ?: return
-    particleData.lifetime = 18 * 20
-
-    for (i in 1..SMOKE_GRENADE_RADIUS) {
-        val particleRadius = sqrt((SMOKE_GRENADE_RADIUS * SMOKE_GRENADE_RADIUS - i * i).toDouble()).toFloat()
-        createParticleHelper(particleRadius, i, pos)
-
-//        Minecraft.getInstance().particleEngine.createParticle(
-//            ParticleTypes.CAMPFIRE_COSY_SMOKE,
-//            pos.x,
-//            pos.y,
-//            pos.z,
-//            0.0,
-//            0.0,
-//            0.0
-//        )!!.scale((particleWidth / 2f).toFloat()).lifetime = 18 * 20
-
+        )?.scale(2f)?.lifetime = 18 * 20
     }
-}
-
-private fun createParticleHelper(particleRadius: Float, distance: Int, center: Vec3) {
-    val lifeTime = 18 * 20
-
-    val particleEngine = Minecraft.getInstance().particleEngine
-
-    particleEngine.createParticle(
-        ParticleTypes.CAMPFIRE_COSY_SMOKE,
-        center.x + distance,
-        center.y,
-        center.z,
-        0.0,
-        0.0,
-        0.0,
-    )!!.scale((particleRadius) / 0.2f).lifetime = lifeTime
-
-    particleEngine.createParticle(
-        ParticleTypes.CAMPFIRE_COSY_SMOKE,
-        center.x - distance,
-        center.y,
-        center.z,
-        0.0,
-        0.0,
-        0.0,
-    )!!.scale((particleRadius) / 0.2f).lifetime = lifeTime
-
-    particleEngine.createParticle(
-        ParticleTypes.CAMPFIRE_COSY_SMOKE,
-        center.x,
-        center.y + distance,
-        center.z,
-        0.0,
-        0.0,
-        0.0,
-    )!!.scale((particleRadius) / 0.2f).lifetime = lifeTime
-
-    particleEngine.createParticle(
-        ParticleTypes.CAMPFIRE_COSY_SMOKE,
-        center.x,
-        center.y - distance,
-        center.z,
-        0.0,
-        0.0,
-        0.0,
-    )!!.scale((particleRadius) / 0.2f).lifetime = lifeTime
-
-    particleEngine.createParticle(
-        ParticleTypes.CAMPFIRE_COSY_SMOKE,
-        center.x,
-        center.y,
-        center.z + distance,
-        0.0,
-        0.0,
-        0.0,
-    )!!.scale((particleRadius) / 0.2f).lifetime = lifeTime
-
-    particleEngine.createParticle(
-        ParticleTypes.CAMPFIRE_COSY_SMOKE,
-        center.x,
-        center.y,
-        center.z - distance,
-        0.0,
-        0.0,
-        0.0,
-    )!!.scale((particleRadius) / 0.2f).lifetime = lifeTime
-
 }
