@@ -4,10 +4,10 @@ import kotlin.math.max
 
 enum class SoundTypes(val initialVolume: Double, val hearableRange: Double) {
     // General sound types
-    GRENADE_HIT(0.2, 30.0),
+    GRENADE_HIT(0.1, 30.0),
 
     // Flashbang
-    FLASHBANG_EXPLODE(0.25, 50.0)
+    FLASHBANG_EXPLODE(0.2, 50.0)
 
 }
 
