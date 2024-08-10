@@ -3,6 +3,7 @@ package club.pisquad.minecraft.csgrenades.network
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.network.message.FlashBangExplodedMessage
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownMessage
+import club.pisquad.minecraft.csgrenades.network.message.SmokeEmittedMessage
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.network.NetworkDirection
 import net.minecraftforge.network.NetworkEvent
@@ -48,6 +49,16 @@ object CsGrenadePacketHandler {
             FlashBangExplodedMessage::decoder,
             FlashBangExplodedMessage::handler,
             Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        )
+        INSTANCE.registerMessage(
+            messageTypeCount,
+            SmokeEmittedMessage::class.java,
+            SmokeEmittedMessage::encoder,
+            SmokeEmittedMessage::decoder,
+            SmokeEmittedMessage::handler,
+            Optional.of(
+                NetworkDirection.PLAY_TO_CLIENT
+            )
         )
     }
 }

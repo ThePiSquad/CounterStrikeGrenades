@@ -28,5 +28,23 @@
     "sounds": [
       "csgrenades:flashbang/explosion_ring"
     ]
+  },
+  "smokegrenade.draw": {
+    "category": "player",
+    "sounds": [
+      "csgrenades:smokegrenade/smokegrenade_draw"
+    ]
+  },
+  "smokegrenade.smoke_emmit": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:smokegrenade/smoke_emit"
+    ]
+  },
+  "smokegrenade.smoke_explode_distant": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:smokegrenade/smokegrenade_explode_distant"
+    ]
   }
 }

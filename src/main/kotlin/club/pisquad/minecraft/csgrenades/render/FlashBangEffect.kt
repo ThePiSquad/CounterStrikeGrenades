@@ -1,6 +1,7 @@
 package club.pisquad.minecraft.csgrenades.render
 
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
+import club.pisquad.minecraft.csgrenades.getTimeFromTickCount
 import club.pisquad.minecraft.csgrenades.helper.TickHelper
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import club.pisquad.minecraft.csgrenades.toVec3i
@@ -180,10 +181,6 @@ object FlashBangEffect {
         val opacity = min(255, max(0, (30 * (effectData!!.totalEffectTime - timeSinceBegin)).toInt()))
         return opacity
     }
-}
-
-fun getTimeFromTickCount(tickCount: Double): Double {
-    return tickCount / 20.0
 }
 
 fun getBlockingFactorDelta(blockState: BlockState): Double {

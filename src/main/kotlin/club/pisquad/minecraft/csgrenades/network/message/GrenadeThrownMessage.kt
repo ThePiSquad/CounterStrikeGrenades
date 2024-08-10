@@ -57,8 +57,12 @@ class GrenadeThrownMessage(
 
             val serverLevel: ServerLevel = sender.level() as ServerLevel
 
+            val entityType = when (msg.grenadeType) {
+                GrenadeType.FLASH_BANG -> ModEntities.FLASH_BANG_ENTITY.get()
+                GrenadeType.SMOKE_GRENADE -> ModEntities.SMOKE_GRENADE_ENTITY.get()
+            }
 
-            val grenadeEntity = ModEntities.FLASH_BANG_ENTITY.get().create(serverLevel) ?: return
+            val grenadeEntity = entityType.create(serverLevel) ?: return
             grenadeEntity.owner = context.sender?.level()?.getPlayerByUUID(msg.ownerUUID)
 
             grenadeEntity.setPos(msg.position)

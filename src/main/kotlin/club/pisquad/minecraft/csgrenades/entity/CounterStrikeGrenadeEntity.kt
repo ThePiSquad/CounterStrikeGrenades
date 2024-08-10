@@ -16,13 +16,14 @@ import net.minecraft.world.phys.Vec3
 import kotlin.math.sqrt
 
 abstract class CounterStrikeGrenadeEntity(
-    pEntityType: EntityType<FlashBangEntity>,
+    pEntityType: EntityType<out ThrowableItemProjectile>,
     pLevel: Level,
     val grenadeType: GrenadeType
 ) :
     ThrowableItemProjectile(pEntityType, pLevel) {
 
     private val speed: Float = 0f
+    var isLanded: Boolean = false
 
     companion object {
         val speedAccessor: EntityDataAccessor<Float> =
@@ -42,6 +43,9 @@ abstract class CounterStrikeGrenadeEntity(
     }
 
     override fun tick() {
+        if (this.isLanded) {
+            this.deltaMovement = Vec3.ZERO
+        }
         super.tick()
 
         // Calculate the speed for entity
@@ -60,6 +64,8 @@ abstract class CounterStrikeGrenadeEntity(
 
     override fun onHitBlock(result: BlockHitResult) {
 //        logger.info("Grenade[@$this] hit block at ${result.blockPos}")
+        if (isLanded) return
+
         this.deltaMovement = when (result.direction) {
             Direction.UP, Direction.DOWN -> Vec3(deltaMovement.x, -deltaMovement.y, deltaMovement.z)
 
@@ -79,6 +85,16 @@ abstract class CounterStrikeGrenadeEntity(
         this.deltaMovement = this.deltaMovement.scale(0.5)
 
         this.playSound(ModSoundEvents.GRENADE_HIT.get(), 1f, 1f)
+
+        // fix: the entity will keep bouncing on the ground
+        if (result.direction == Direction.UP && this.deltaMovement.length() < 0.05) {
+            this.setPos(this.x, result.blockPos.y.toDouble() + 1, this.z)
+            this.deltaMovement = Vec3.ZERO
+            this.isLanded = true
+//            onLanding()
+        }
     }
+
+//    abstract fun onLanding()
 
 }

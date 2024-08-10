@@ -6,11 +6,12 @@ import club.pisquad.minecraft.csgrenades.network.message.FlashBangExplodedMessag
 import club.pisquad.minecraft.csgrenades.registery.ModItems
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraftforge.network.PacketDistributor
 
-class FlashBangEntity(pEntityType: EntityType<FlashBangEntity>, pLevel: Level) :
+class FlashBangEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) :
     CounterStrikeGrenadeEntity(pEntityType, pLevel, GrenadeType.FLASH_BANG) {
 //    private val logger: Logger = LogManager.getLogger(CounterStrikeGrenades.ID + ":flashbang_entity")
 

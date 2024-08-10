@@ -2,6 +2,7 @@ package club.pisquad.minecraft.csgrenades
 
 const val PLAYER_EYESIGHT_OFFSET = 1.62
 const val GRENADE_THROW_COOLDOWN = 20
+const val GRENADE_ENTITY_SIZE = 0.3f
 
 // Grenade throw acton settings
 // There are two types of throw actions, strong and weak, just like in CSGO

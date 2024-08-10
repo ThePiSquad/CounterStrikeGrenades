@@ -13,6 +13,7 @@ object ModCreativeTabs {
     fun onCreativeTabBuildContents(event: BuildCreativeModeTabContentsEvent) {
         if (event.tabKey == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.FLASH_BANG_ITEM.get())
+            event.accept(ModItems.SMOKE_GRENADE_ITEM.get())
         }
     }
 }

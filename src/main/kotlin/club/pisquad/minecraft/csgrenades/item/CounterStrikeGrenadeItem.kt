@@ -25,7 +25,7 @@ open class CounterStrikeGrenadeItem(properties: Properties) : Item(properties) {
     private var isHoldingBefore: Boolean = false
 
     // Sounds
-    private var drawSound: SoundEvent = SoundEvents.EMPTY
+    var drawSound: SoundEvent = SoundEvents.EMPTY
 
     override fun inventoryTick(stack: ItemStack, level: Level, entity: Entity, slotId: Int, isSelected: Boolean) {
         if (!level.isClientSide) return
@@ -80,6 +80,8 @@ object PlayerInteractEventHandler {
 
         val grenadeType = when (itemInHand) {
             is FlashBangItem -> GrenadeType.FLASH_BANG
+            is SmokeGrenadeItem -> GrenadeType.SMOKE_GRENADE
+
             else -> {
                 return
             }
