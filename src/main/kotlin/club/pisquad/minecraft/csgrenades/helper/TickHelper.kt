@@ -12,36 +12,42 @@ object TickHelper {
     private var isServerSide = false
 
 
-    private val tickCounts = mutableMapOf<String, Int>()
+    private val tickCounters = mutableMapOf<String, Int>()
 
     fun create(name: String) {
-        if (!tickCounts.containsKey(name)) {
-            tickCounts[name] = 0
+        if (!tickCounters.containsKey(name)) {
+            tickCounters[name] = 0
         }
     }
 
     fun reset(name: String) {
-        if (tickCounts.containsKey(name)) tickCounts[name] = 0 else throw InvalidParameterException()
+        if (tickCounters.containsKey(name)) tickCounters[name] = 0 else throw InvalidParameterException()
     }
 
     fun get(name: String): Int {
-        return tickCounts[name] ?: throw InvalidParameterException()
+        return tickCounters[name] ?: throw InvalidParameterException()
+    }
+
+    fun delete(name: String) {
+        if (tickCounters.containsKey(name)) {
+            tickCounters.remove(name)
+        }
     }
 
     @SubscribeEvent
     fun tickHandler(event: TickEvent) {
-        if(event.phase==TickEvent.Phase.END)return
+        if (event.phase == TickEvent.Phase.END) return
 
         if (!isServerSide && event is TickEvent.ClientTickEvent) {
-            for (key in tickCounts.keys) {
-                tickCounts[key] = tickCounts[key]!!.plus(1)
+            for (key in tickCounters.keys) {
+                tickCounters[key] = tickCounters[key]!!.plus(1)
             }
             return
         } else if (
             event is TickEvent.ServerTickEvent
         ) {
-            for (key in tickCounts.keys) {
-                tickCounts[key] = tickCounts[key]!!.plus(1)
+            for (key in tickCounters.keys) {
+                tickCounters[key] = tickCounters[key]!!.plus(1)
             }
             isServerSide = true
         }

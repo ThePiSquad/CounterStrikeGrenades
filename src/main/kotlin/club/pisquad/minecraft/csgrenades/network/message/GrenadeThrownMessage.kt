@@ -75,8 +75,7 @@ class GrenadeThrownMessage(
                 0f
             )
 
-            val summonResult = serverLevel.addFreshEntity(grenadeEntity)
-//            Logger.info("Add grenade entity result $summonResult")
+            serverLevel.addFreshEntity(grenadeEntity)
 
             context.packetHandled = true
         }
