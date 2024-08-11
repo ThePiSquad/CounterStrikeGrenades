@@ -1,5 +1,6 @@
 package club.pisquad.minecraft.csgrenades.entity
 
+import club.pisquad.minecraft.csgrenades.SMOKE_GRENADE_SMOKE_LIFETIME
 import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.getTimeFromTickCount
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
@@ -49,7 +50,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         }
         if (this.isEmitted) {
             tickCount++
-            if (getTimeFromTickCount(tickCount.toDouble()) > 18.0) {
+            if (getTimeFromTickCount(tickCount.toDouble()) > SMOKE_GRENADE_SMOKE_LIFETIME) {
                 this.kill()
             }
         }
