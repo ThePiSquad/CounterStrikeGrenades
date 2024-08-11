@@ -47,9 +47,9 @@ class SmokeEmittedMessage(
             // Sounds
             val soundManager = Minecraft.getInstance().soundManager
             val soundEvent =
-                if (distance > 15) ModSoundEvents.SMOKE_EXPLODE_DISTANT.get() else ModSoundEvents.SMOKE_EMIT.get()
+                if (distance > 30) ModSoundEvents.SMOKE_EXPLODE_DISTANT.get() else ModSoundEvents.SMOKE_EMIT.get()
             val soundType =
-                if (distance > 15) SoundTypes.SMOKE_GRENADE_EXPLODE_DISTANT else SoundTypes.SMOKE_GRENADE_EMIT
+                if (distance > 30) SoundTypes.SMOKE_GRENADE_EXPLODE_DISTANT else SoundTypes.SMOKE_GRENADE_EMIT
             val entity = level.getEntity(msg.entityId) ?: return
 
             val soundInstance = EntityBoundSoundInstance(

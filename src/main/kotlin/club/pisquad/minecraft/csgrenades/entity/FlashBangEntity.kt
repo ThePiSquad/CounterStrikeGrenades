@@ -4,7 +4,6 @@ import club.pisquad.minecraft.csgrenades.enums.GrenadeType
 import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.network.message.FlashBangExplodedMessage
 import club.pisquad.minecraft.csgrenades.registery.ModItems
-import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.item.Item
@@ -21,6 +20,10 @@ class FlashBangEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLev
 
     override fun tick() {
         super.tick()
+//
+//        if (this.isExploded) {
+//
+//        }
 
         // FlashBang exploded after 1.6 second in CSGO, this logic only for server side
         if (!this.level().isClientSide) {
@@ -29,14 +32,10 @@ class FlashBangEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLev
                     PacketDistributor.ALL.noArg(),
                     FlashBangExplodedMessage(this.id, this.position())
                 )
+                isExploded = true
                 this.kill()
             }
         }
 
     }
-
-    override fun shouldBeSaved(): Boolean {
-        return false
-    }
-
 }

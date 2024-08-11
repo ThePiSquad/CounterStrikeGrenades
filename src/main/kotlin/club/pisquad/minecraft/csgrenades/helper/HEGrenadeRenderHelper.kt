@@ -91,14 +91,14 @@ class HEGrenadeRenderer(
         for (i in 1..300) {
             val location = getRandomLocationFromSphere(data.position, 4.0)
             particleEngine.createParticle(
-                ParticleTypes.SMOKE,
+                ParticleTypes.LARGE_SMOKE,
                 location.x,
                 location.y,
                 location.z,
                 0.0,
                 0.0,
                 0.0,
-            )?.lifetime = 20
+            )?.scale(2f)?.lifetime = 20
         }
 
 

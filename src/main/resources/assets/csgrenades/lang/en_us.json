@@ -1,5 +1,6 @@
 {
   "itemGroup.csgrenades": "CS Grenades",
   "item.csgrenades.flashbang": "Flash Bang",
-  "item.csgrenades.smokegrenade": "Smoke Grenade"
+  "item.csgrenades.smokegrenade": "Smoke Grenade",
+  "item.csgrenades.hegrenade": "HE Grenade"
 }
