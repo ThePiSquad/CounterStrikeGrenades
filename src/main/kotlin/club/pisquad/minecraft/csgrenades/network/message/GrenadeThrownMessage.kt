@@ -60,6 +60,7 @@ class GrenadeThrownMessage(
             val entityType = when (msg.grenadeType) {
                 GrenadeType.FLASH_BANG -> ModEntities.FLASH_BANG_ENTITY.get()
                 GrenadeType.SMOKE_GRENADE -> ModEntities.SMOKE_GRENADE_ENTITY.get()
+                GrenadeType.HEGRENADE -> ModEntities.HEGRENADE_ENTITY.get()
             }
 
             val grenadeEntity = entityType.create(serverLevel) ?: return

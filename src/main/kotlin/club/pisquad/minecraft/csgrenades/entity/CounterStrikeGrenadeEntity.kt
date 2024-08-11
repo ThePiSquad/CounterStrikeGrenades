@@ -31,9 +31,11 @@ abstract class CounterStrikeGrenadeEntity(
     private val speed: Float = 0f
     var isLanded: Boolean = false
 
+    var hitBlockSound = ModSoundEvents.GRENADE_HIT.get()
+
     companion object {
         val speedAccessor: EntityDataAccessor<Float> =
-            SynchedEntityData.defineId(FlashBangEntity::class.java, EntityDataSerializers.FLOAT)
+            SynchedEntityData.defineId(CounterStrikeGrenadeEntity::class.java, EntityDataSerializers.FLOAT)
     }
 
     override fun defineSynchedData() {
@@ -113,7 +115,7 @@ abstract class CounterStrikeGrenadeEntity(
             val player = Minecraft.getInstance().player!!
             val distance = this.position().add(player.position().reverse()).length()
             val soundInstance = EntityBoundSoundInstance(
-                ModSoundEvents.GRENADE_HIT.get(),
+                hitBlockSound,
                 SoundSource.AMBIENT,
                 SoundUtils.getVolumeFromDistance(
                     distance,
@@ -132,6 +134,10 @@ abstract class CounterStrikeGrenadeEntity(
             this.deltaMovement = Vec3.ZERO
             this.isLanded = true
         }
+    }
+
+    override fun shouldBeSaved(): Boolean {
+        return false
     }
 
 }

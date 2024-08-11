@@ -52,5 +52,29 @@
     "sounds": [
       "csgrenades:smokegrenade/smokegrenade_explode_distant"
     ]
+  },
+  "hegrenade.draw": {
+    "category": "player",
+    "sounds": [
+      "csgrenades:hegrenade/hegrenade_draw"
+    ]
+  },
+  "hegrenade.bounce": {
+    "category": "player",
+    "sounds": [
+      "csgrenades:hegrenade/hegrenade_bounce"
+    ]
+  },
+  "hegrenade.explode": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:hegrenade/hegrenade_explode"
+    ]
+  },
+  "hegrenade.explode_distant": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:hegrenade/hegrenade_explode_distant"
+    ]
   }
 }

@@ -3,6 +3,7 @@ package club.pisquad.minecraft.csgrenades.registery
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.GRENADE_ENTITY_SIZE
 import club.pisquad.minecraft.csgrenades.entity.FlashBangEntity
+import club.pisquad.minecraft.csgrenades.entity.HEGrenadeEntity
 import club.pisquad.minecraft.csgrenades.entity.SmokeGrenadeEntity
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType
@@ -30,6 +31,14 @@ object ModEntities {
             MobCategory.MISC
         ).sized(GRENADE_ENTITY_SIZE, GRENADE_ENTITY_SIZE)
             .build(ResourceLocation(CounterStrikeGrenades.ID, "smokegrenade").toString())
+    }
+
+    val HEGRENADE_ENTITY: RegistryObject<EntityType<HEGrenadeEntity>> = ENTITIES.register("hegrenade") {
+        EntityType.Builder.of(
+            { pEntityType: EntityType<HEGrenadeEntity>, pLevel: Level -> HEGrenadeEntity(pEntityType, pLevel) },
+            MobCategory.MISC
+        ).sized(GRENADE_ENTITY_SIZE, GRENADE_ENTITY_SIZE)
+            .build(ResourceLocation(CounterStrikeGrenades.ID, "hegrenade").toString())
     }
 
 }

@@ -71,16 +71,3 @@ class SmokeRenderer(
         tickCount++
     }
 }
-
-private fun getRandomLocationFromSphere(center: Vec3, radius: Double): Vec3 {
-    while (true) {
-        val posDelta = Vec3(
-            Random.nextDouble(0.0, radius * 2) - radius,
-            Random.nextDouble(0.0, radius * 2) - radius,
-            Random.nextDouble(0.0, radius * 2) - radius
-        )
-        if (posDelta.length() < radius) {
-            return center.add(posDelta)
-        }
-    }
-}

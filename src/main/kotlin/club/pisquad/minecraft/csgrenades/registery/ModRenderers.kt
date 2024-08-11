@@ -20,6 +20,7 @@ object ModRenderers {
 
         EntityRenderers.register(ModEntities.FLASH_BANG_ENTITY.get(), ::ThrownItemRenderer)
         EntityRenderers.register(ModEntities.SMOKE_GRENADE_ENTITY.get(), ::ThrownItemRenderer)
+        EntityRenderers.register(ModEntities.HEGRENADE_ENTITY.get(), ::ThrownItemRenderer)
 
         MinecraftForge.EVENT_BUS.register(FlashBangEffect::class)
 

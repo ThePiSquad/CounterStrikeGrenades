@@ -81,6 +81,7 @@ object PlayerInteractEventHandler {
         val grenadeType = when (itemInHand) {
             is FlashBangItem -> GrenadeType.FLASH_BANG
             is SmokeGrenadeItem -> GrenadeType.SMOKE_GRENADE
+            is HEGrenadeItem -> GrenadeType.HEGRENADE
 
             else -> {
                 return

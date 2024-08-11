@@ -24,6 +24,11 @@ object ModSoundEvents {
     val SMOKE_EMIT = registerSoundEvents("smokegrenade.smoke_emmit")
     val SMOKE_EXPLODE_DISTANT = registerSoundEvents("smokegrenade.smoke_explode_distant")
 
+    val HEGRENADE_DRAW = registerSoundEvents("hegrenade.draw")
+    val HEGRENADE_BOUNCE = registerSoundEvents("hegrenade.bounce")
+    val HEGRENADE_EXPLODE = registerSoundEvents("hegrenade.explode")
+    val HEGRENADE_EXPLODE_DISTANT = registerSoundEvents("hegrenade.explode_distant")
+
 
     fun register(eventBus: IEventBus) {
         SOUND_EVENTS.register(eventBus)

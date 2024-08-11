@@ -14,6 +14,7 @@ object ModCreativeTabs {
         if (event.tabKey == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.FLASH_BANG_ITEM.get())
             event.accept(ModItems.SMOKE_GRENADE_ITEM.get())
+            event.accept(ModItems.HEGRENADE_ITEM.get())
         }
     }
 }

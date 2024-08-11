@@ -2,5 +2,6 @@ package club.pisquad.minecraft.csgrenades.enums
 
 enum class GrenadeType {
     FLASH_BANG,
-    SMOKE_GRENADE
+    SMOKE_GRENADE,
+    HEGRENADE,
 }
