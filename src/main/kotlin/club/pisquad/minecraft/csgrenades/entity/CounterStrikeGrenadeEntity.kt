@@ -20,7 +20,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
-import kotlin.math.sqrt
 
 abstract class CounterStrikeGrenadeEntity(
     pEntityType: EntityType<out ThrowableItemProjectile>,
@@ -54,19 +53,11 @@ abstract class CounterStrikeGrenadeEntity(
     }
 
     override fun tick() {
-        if (this.isLanded) {
-            this.deltaMovement = Vec3.ZERO
-        }
         super.tick()
-
-        // Calculate the speed for entity
-        val dx: Double = this.x - this.xo
-        val dy: Double = this.y - this.yo
-        val dz: Double = this.z - this.zo
-        val newSpeed = sqrt(dx * dx + dy * dy + dz * dz) * 20
-
-        this.entityData.set(speedAccessor, newSpeed.toFloat())
-
+        if (this.isLanded || this.isExploded) {
+            this.deltaMovement = Vec3.ZERO
+            this.isNoGravity = true
+        }
     }
 
     /**
@@ -90,25 +81,8 @@ abstract class CounterStrikeGrenadeEntity(
      */
     override fun onHitBlock(result: BlockHitResult) {
 //        logger.info("Grenade[@$this] hit block at ${result.blockPos}")
-        if (isLanded) return
 
-        this.deltaMovement = when (result.direction) {
-            Direction.UP, Direction.DOWN -> Vec3(deltaMovement.x, -deltaMovement.y, deltaMovement.z)
-
-            Direction.WEST, Direction.EAST ->
-                Vec3(-deltaMovement.x, deltaMovement.y, deltaMovement.z)
-
-            Direction.NORTH, Direction.SOUTH ->
-                Vec3(deltaMovement.x, deltaMovement.y, -deltaMovement.z)
-
-            null -> deltaMovement
-
-        }
-        if (result.isInside) {
-            this.setPos(this.xOld, this.yOld, this.zOld)
-        }
-
-        this.deltaMovement = this.deltaMovement.scale(0.5)
+        this.setPos(this.xOld, this.yOld, this.zOld)
 
         // entity.playSound seems to have a relatively small hearable ange
         // This function seems to be work fine when calling from server and client side?
@@ -131,6 +105,32 @@ abstract class CounterStrikeGrenadeEntity(
             Minecraft.getInstance().soundManager.play(soundInstance)
         }
 
+        // Calculate the movement of the entity
+//        if (this.level() is ServerLevel) {
+        val position = this.position()
+        this.setPos(this.xOld, this.yOld, this.zOld)
+        if (isLanded || isExploded) {
+            return
+
+        } else {
+            this.deltaMovement = when (result.direction) {
+                Direction.UP, Direction.DOWN -> Vec3(deltaMovement.x, -deltaMovement.y, deltaMovement.z)
+
+                Direction.WEST, Direction.EAST ->
+                    Vec3(-deltaMovement.x, deltaMovement.y, deltaMovement.z)
+
+                Direction.NORTH, Direction.SOUTH ->
+                    Vec3(deltaMovement.x, deltaMovement.y, -deltaMovement.z)
+
+                null -> deltaMovement
+
+            }
+//                if (result.isInside) {
+            this.setPos(this.xOld, this.yOld, this.zOld)
+//                }
+
+            this.deltaMovement = this.deltaMovement.scale(0.5)
+        }
         // fix: the entity will keep bouncing on the ground
         if (result.direction == Direction.UP && this.deltaMovement.length() < 0.05) {
             this.setPos(this.x, result.blockPos.y.toDouble() + 1, this.z)

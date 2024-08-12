@@ -19,7 +19,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.PacketDistributor
-import kotlin.math.acos
 
 class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) :
     CounterStrikeGrenadeEntity(pEntityType, pLevel, GrenadeType.INCENDIARY) {
@@ -38,6 +37,9 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
         super.tick()
         if (this.level() is ClientLevel) return
         if (this.isExploded) {
+            // Keep this entity in place
+            this.deltaMovement = Vec3.ZERO
+
             // Damage players within range
 
             val level = this.level() as ServerLevel
@@ -59,24 +61,27 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
     }
 
     override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+        // Incendiary Grenade Explodes when hit a walkable surface that is 30 degree or smaller from horizon.
+        // But in MC, all grounds are flat and horizontal
+        // we only want the server to handle this logic
+        if (this.level() !is ClientLevel) {
+            if (this.isExploded || this.isLanded) return
+            if (result.direction == Direction.UP) {
 
-        // Incendiary Grenade Explodes when hit a walkable surface from 30 or smaller angle.
-        // val horizontalSpeedDirection = Vec3(this.deltaMovement.x, this.deltaMovement.z).normalized()
-
-        if (result.direction == Direction.UP) {
-            val horizontalSpeed = Vec3(this.deltaMovement.x, 0.0, this.deltaMovement.z)
-            val angle = acos(horizontalSpeed.normalize().dot(this.deltaMovement.normalize()))
-            if (angle < 30.0) {
                 this.isLanded = true
                 this.isExploded = true
                 this.deltaMovement = Vec3.ZERO
-
                 this.explosionTick = this.tickCount
-
+                this.isNoGravity = true
                 sendExplodedMessage()
+                return
+
             }
         }
+
+        super.onHitBlock(result)
+
+
     }
 
     fun sendExplodedMessage() {

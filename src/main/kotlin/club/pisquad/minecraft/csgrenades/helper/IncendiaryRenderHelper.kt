@@ -22,6 +22,8 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 data class IncendiaryEffectData(
     val entityId: Int,
@@ -32,10 +34,10 @@ data class IncendiaryEffectData(
 @Mod.EventBusSubscriber(modid = CounterStrikeGrenades.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object IncendiaryRenderHelper {
     private val renderers: MutableList<IncendiaryRenderer> = mutableListOf()
+    private val lock = ReentrantLock()
 
     fun render(data: IncendiaryEffectData) {
-        renderers.add(IncendiaryRenderer(data))
-
+        lock.withLock { renderers.add(IncendiaryRenderer(data)) }
     }
 
     @SubscribeEvent
@@ -52,7 +54,7 @@ object IncendiaryRenderHelper {
 private class IncendiaryRenderer(
     val data: IncendiaryEffectData
 ) {
-    var soundInstance: SoundInstance? = null
+    val soundInstance: SoundInstance
     var tickCount = 0
 
     init {
@@ -67,16 +69,22 @@ private class IncendiaryRenderer(
             Minecraft.getInstance().level?.getEntity(data.entityId) ?: player, // don't know why im doing this
             0
         )
-
-        Minecraft.getInstance().soundManager.play(soundInstance!!)
     }
 
     fun update(): Boolean {
-        tickCount++
+
+        // Sounds
+        when {
+            tickCount == 0 -> Minecraft.getInstance().soundManager.play(soundInstance)
+        }
+
         if (getTimeFromTickCount(tickCount.toDouble()) > INCENDIARY_LIFETIME) {
             return true
         }
         drawParticles()
+
+        tickCount++
+
         return false
     }
 
@@ -109,5 +117,5 @@ private class IncendiaryRenderer(
 fun getLifetimeFromDistance(distance: Double): Int {
     val randomSource = RandomSource.create()
     return (INCENDIARY_RANGE - distance).div(INCENDIARY_LIFETIME).times(INCENDIARY_PARTICLE_LIFETIME)
-        .toInt() + randomSource.nextInt(0, 3)
+        .toInt() + randomSource.nextInt(0, 5)
 }
