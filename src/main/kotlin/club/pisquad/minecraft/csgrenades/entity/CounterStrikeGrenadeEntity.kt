@@ -29,7 +29,7 @@ abstract class CounterStrikeGrenadeEntity(
 ) :
     ThrowableItemProjectile(pEntityType, pLevel) {
 
-    private val speed: Float = 0f
+    val speed: Float = 0f
     var isLanded: Boolean = false
     var isExploded: Boolean = false
 
@@ -122,7 +122,7 @@ abstract class CounterStrikeGrenadeEntity(
                 SoundSource.AMBIENT,
                 SoundUtils.getVolumeFromDistance(
                     distance,
-                    SoundTypes.GRENADE_HIT
+                    SoundTypes.GRENADE_HIT // unify volume for all grenades hit sounds
                 ).toFloat(),
                 1f,
                 this,

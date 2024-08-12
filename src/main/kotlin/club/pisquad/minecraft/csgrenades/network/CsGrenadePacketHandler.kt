@@ -4,6 +4,7 @@ import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.network.message.FlashBangExplodedMessage
 import club.pisquad.minecraft.csgrenades.network.message.GrenadeThrownMessage
 import club.pisquad.minecraft.csgrenades.network.message.HEGrenadeExplodedMessage
+import club.pisquad.minecraft.csgrenades.network.message.IncendiaryExplodedMessage
 import club.pisquad.minecraft.csgrenades.network.message.SmokeEmittedMessage
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.network.NetworkDirection
@@ -67,6 +68,16 @@ object CsGrenadePacketHandler {
             HEGrenadeExplodedMessage::encoder,
             HEGrenadeExplodedMessage::decoder,
             HEGrenadeExplodedMessage::handler,
+            Optional.of(
+                NetworkDirection.PLAY_TO_CLIENT
+            )
+        )
+        INSTANCE.registerMessage(
+            messageTypeCount,
+            IncendiaryExplodedMessage::class.java,
+            IncendiaryExplodedMessage::encoder,
+            IncendiaryExplodedMessage::decoder,
+            IncendiaryExplodedMessage::handler,
             Optional.of(
                 NetworkDirection.PLAY_TO_CLIENT
             )

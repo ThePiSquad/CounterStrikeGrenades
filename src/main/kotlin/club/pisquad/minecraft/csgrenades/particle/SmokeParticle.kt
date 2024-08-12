@@ -1,5 +1,6 @@
 package club.pisquad.minecraft.csgrenades.particle
 
+import club.pisquad.minecraft.csgrenades.SMOKE_GRENADE_SMOKE_LIFETIME
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.particle.ParticleProvider
 import net.minecraft.client.particle.ParticleRenderType
@@ -19,7 +20,7 @@ class SmokeParticle(
     init {
         this.gravity = 0f
         this.setParticleSpeed(0.0, 0.0, 0.0)
-        this.lifetime = 18 * 20
+        this.lifetime = (SMOKE_GRENADE_SMOKE_LIFETIME * 20).toInt()
         this.scale(5f)
     }
 

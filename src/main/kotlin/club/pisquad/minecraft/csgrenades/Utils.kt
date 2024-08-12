@@ -2,6 +2,7 @@ package club.pisquad.minecraft.csgrenades
 
 import net.minecraft.core.Vec3i
 import net.minecraft.util.RandomSource
+import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
 
 /**
@@ -23,6 +24,19 @@ fun getRandomLocationFromSphere(center: Vec3, radius: Double): Vec3 {
             randomSource.nextDouble() * radius * 2 - radius,
             randomSource.nextDouble() * radius * 2 - radius,
             randomSource.nextDouble() * radius * 2 - radius
+        )
+        if (posDelta.length() < radius) {
+            return center.add(posDelta)
+        }
+    }
+}
+
+fun getRandomLocationFromCircle(center: Vec2, radius: Double): Vec2 {
+    val randomSource = RandomSource.create()
+    while (true) {
+        val posDelta = Vec2(
+            (randomSource.nextDouble() * radius * 2 - radius).toFloat(),
+            (randomSource.nextDouble() * radius * 2 - radius).toFloat()
         )
         if (posDelta.length() < radius) {
             return center.add(posDelta)

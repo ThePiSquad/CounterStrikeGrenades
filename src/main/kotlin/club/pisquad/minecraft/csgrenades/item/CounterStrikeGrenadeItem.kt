@@ -20,27 +20,31 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
+private var drawSoundPlayedSlot: Int = -1
+
 
 open class CounterStrikeGrenadeItem(properties: Properties) : Item(properties) {
-    private var isHoldingBefore: Boolean = false
+
+    lateinit var grenadeType: GrenadeType
 
     // Sounds
     var drawSound: SoundEvent = SoundEvents.EMPTY
 
     override fun inventoryTick(stack: ItemStack, level: Level, entity: Entity, slotId: Int, isSelected: Boolean) {
         if (!level.isClientSide) return
+        if (entity !is Player) return
 
-        if (isSelected) {
-            if (!isHoldingBefore) {
-                entity.playSound(drawSound, 0.2f, 1.0f)
-                isHoldingBefore = true
-            }
-        } else {
-            isHoldingBefore = false
+        if (isSelected && drawSoundPlayedSlot != slotId) {
+            entity.playSound(drawSound, 0.2f, 1.0f)
+            drawSoundPlayedSlot = slotId
         }
+        if (entity.inventory.selected != drawSoundPlayedSlot) {
+            drawSoundPlayedSlot = -1
+        }
+
     }
 
-    fun throwAction(player: Player, grenadeType: GrenadeType, throwType: GrenadeThrowType) {
+    fun throwAction(player: Player, throwType: GrenadeThrowType) {
         val playerSpeedFactor = when (throwType) {
             GrenadeThrowType.Strong -> STRONG_THROW_PLAYER_SPEED_FACTOR
             GrenadeThrowType.Weak -> WEAK_THROW_PLAYER_SPEED_FACTOR
@@ -78,23 +82,14 @@ object PlayerInteractEventHandler {
         val itemInHand = event.entity.getItemInHand(event.hand).item
         if (itemInHand !is CounterStrikeGrenadeItem) return
 
-        val grenadeType = when (itemInHand) {
-            is FlashBangItem -> GrenadeType.FLASH_BANG
-            is SmokeGrenadeItem -> GrenadeType.SMOKE_GRENADE
-            is HEGrenadeItem -> GrenadeType.HEGRENADE
-
-            else -> {
-                return
-            }
-        }
 
         when (event) {
             is PlayerInteractEvent.LeftClickBlock, is PlayerInteractEvent.LeftClickEmpty -> {
-                itemInHand.throwAction(event.entity, grenadeType, GrenadeThrowType.Strong)
+                itemInHand.throwAction(event.entity, GrenadeThrowType.Strong)
             }
 
             is PlayerInteractEvent.RightClickBlock, is PlayerInteractEvent.RightClickItem -> {
-                itemInHand.throwAction(event.entity, grenadeType, GrenadeThrowType.Weak)
+                itemInHand.throwAction(event.entity, GrenadeThrowType.Weak)
             }
         }
         TickHelper.reset(TICK_HELPER_KEY)

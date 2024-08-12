@@ -8,7 +8,6 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import kotlin.random.Random
 
 
 @Mod.EventBusSubscriber(modid = CounterStrikeGrenades.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
@@ -52,7 +51,7 @@ class SmokeRenderer(
             time < SMOKE_GRENADE_SPREAD_TIME -> (time.div(SMOKE_GRENADE_SPREAD_TIME).times(SMOKE_GRENADE_RADIUS)) + .1
             else -> SMOKE_GRENADE_RADIUS.toDouble()
         }
-        for (i in 0..particlePerTick) {
+        for (i in 0..SMOKE_GRENADE_PARTICLE_COUNT) {
             val location = getRandomLocationFromSphere(center, radius)
             particleEngine.createParticle(
                 ModParticles.SMOKE_PARTICLE.get(),

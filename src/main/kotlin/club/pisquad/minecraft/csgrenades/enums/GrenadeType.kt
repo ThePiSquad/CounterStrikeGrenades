@@ -4,4 +4,5 @@ enum class GrenadeType {
     FLASH_BANG,
     SMOKE_GRENADE,
     HEGRENADE,
+    INCENDIARY
 }

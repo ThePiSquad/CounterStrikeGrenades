@@ -76,5 +76,47 @@
     "sounds": [
       "csgrenades:hegrenade/hegrenade_explode_distant"
     ]
+  },
+  "incendiary.draw": {
+    "category": "player",
+    "sounds": [
+      "csgrenades:incendiary/incendiary_draw"
+    ]
+  },
+  "incendiary.throw": {
+    "category": "player",
+    "sounds": [
+      "csgrenades:incendiary/incendiary_throw"
+    ]
+  },
+  "incendiary.explode": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:incendiary/incendiary_explode"
+    ]
+  },
+  "incendiary.explode_distant": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:incendiary/incendiary_explode_distant"
+    ]
+  },
+  "incendiary.explode_air": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:incendiary/incendiary_explode_air"
+    ]
+  },
+  "incendiary.bounce": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:incendiary/incendiary_bounce"
+    ]
+  },
+  "incendiary.pop": {
+    "category": "ambient",
+    "sounds": [
+      "csgrenades:incendiary/incendiary_pop"
+    ]
   }
 }
