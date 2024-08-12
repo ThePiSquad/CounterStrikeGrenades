@@ -100,8 +100,6 @@ class HEGrenadeRenderer(
                 0.0,
             )?.scale(2f)?.lifetime = 20
         }
-
-
     }
 
     fun update(): Boolean {

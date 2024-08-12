@@ -43,7 +43,8 @@ class SmokeRenderer(
 ) {
     var done: Boolean = false
     private var tickCount = 0
-    private val particlePerTick = SMOKE_GRENADE_PARTICLE_COUNT.div(SMOKE_GRENADE_TOTAL_GENERATION_TIME.times(20))
+    private val particlePerTick =
+        SMOKE_GRENADE_PARTICLE_COUNT.div(SMOKE_GRENADE_TOTAL_GENERATION_TIME.times(20)).toInt()
 
     fun update() {
         val time = getTimeFromTickCount(tickCount.toDouble())
@@ -51,7 +52,8 @@ class SmokeRenderer(
             time < SMOKE_GRENADE_SPREAD_TIME -> (time.div(SMOKE_GRENADE_SPREAD_TIME).times(SMOKE_GRENADE_RADIUS)) + .1
             else -> SMOKE_GRENADE_RADIUS.toDouble()
         }
-        for (i in 0..SMOKE_GRENADE_PARTICLE_COUNT) {
+        // unify generation rate should be ok>?
+        for (i in 0..particlePerTick) {
             val location = getRandomLocationFromSphere(center, radius)
             particleEngine.createParticle(
                 ModParticles.SMOKE_PARTICLE.get(),

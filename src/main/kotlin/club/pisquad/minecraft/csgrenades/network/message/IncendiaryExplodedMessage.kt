@@ -1,6 +1,5 @@
 package club.pisquad.minecraft.csgrenades.network.message
 
-import club.pisquad.minecraft.csgrenades.helper.IncendiaryEffectData
 import club.pisquad.minecraft.csgrenades.helper.IncendiaryRenderHelper
 import club.pisquad.minecraft.csgrenades.serializer.Vec3Serializer
 import kotlinx.serialization.Serializable
@@ -16,6 +15,7 @@ import java.util.function.Supplier
 @Serializable
 class IncendiaryExplodedMessage(
     val entityId: Int,
+    val extinguished: Boolean,
     @Serializable(with = Vec3Serializer::class) val position: Vec3
 ) {
     companion object {
@@ -39,12 +39,7 @@ class IncendiaryExplodedMessage(
             }
 
             // Flashbang effect
-            IncendiaryRenderHelper.render(
-                IncendiaryEffectData(
-                    msg.entityId,
-                    msg.position
-                )
-            )
+            IncendiaryRenderHelper.render(msg)
         }
 
     }

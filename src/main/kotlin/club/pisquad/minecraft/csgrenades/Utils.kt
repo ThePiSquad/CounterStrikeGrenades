@@ -2,6 +2,7 @@ package club.pisquad.minecraft.csgrenades
 
 import net.minecraft.core.Vec3i
 import net.minecraft.util.RandomSource
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
 
@@ -42,4 +43,15 @@ fun getRandomLocationFromCircle(center: Vec2, radius: Double): Vec2 {
             return center.add(posDelta)
         }
     }
+}
+
+fun getFireExtinguishRange(center: Vec3): AABB {
+    return AABB(
+        center.x - FIRE_EXTINGUISH_RANGE,
+        center.y - FIRE_EXTINGUISH_RANGE,
+        center.z - FIRE_EXTINGUISH_RANGE,
+        center.x + FIRE_EXTINGUISH_RANGE,
+        center.y + FIRE_EXTINGUISH_RANGE,
+        center.z + FIRE_EXTINGUISH_RANGE,
+    )
 }

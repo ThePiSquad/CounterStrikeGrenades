@@ -9,6 +9,7 @@ import club.pisquad.minecraft.csgrenades.SoundTypes
 import club.pisquad.minecraft.csgrenades.SoundUtils
 import club.pisquad.minecraft.csgrenades.getRandomLocationFromCircle
 import club.pisquad.minecraft.csgrenades.getTimeFromTickCount
+import club.pisquad.minecraft.csgrenades.network.message.IncendiaryExplodedMessage
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
@@ -17,7 +18,6 @@ import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.RandomSource
 import net.minecraft.world.phys.Vec2
-import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -25,18 +25,12 @@ import net.minecraftforge.fml.common.Mod
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-data class IncendiaryEffectData(
-    val entityId: Int,
-    val position: Vec3
-)
-
-
 @Mod.EventBusSubscriber(modid = CounterStrikeGrenades.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object IncendiaryRenderHelper {
     private val renderers: MutableList<IncendiaryRenderer> = mutableListOf()
     private val lock = ReentrantLock()
 
-    fun render(data: IncendiaryEffectData) {
+    fun render(data: IncendiaryExplodedMessage) {
         lock.withLock { renderers.add(IncendiaryRenderer(data)) }
     }
 
@@ -52,7 +46,7 @@ object IncendiaryRenderHelper {
 }
 
 private class IncendiaryRenderer(
-    val data: IncendiaryEffectData
+    val data: IncendiaryExplodedMessage
 ) {
     val soundInstance: SoundInstance
     var tickCount = 0
@@ -73,9 +67,14 @@ private class IncendiaryRenderer(
 
     fun update(): Boolean {
 
+        // Check if the fire is extinguished by smoke grenade
+        if (Minecraft.getInstance().level?.getEntity(data.entityId) == null) {
+            return true
+        }
+
         // Sounds
         when {
-            tickCount == 0 -> Minecraft.getInstance().soundManager.play(soundInstance)
+            tickCount == 0 && !this.data.extinguished -> Minecraft.getInstance().soundManager.play(soundInstance)
         }
 
         if (getTimeFromTickCount(tickCount.toDouble()) > INCENDIARY_LIFETIME) {
