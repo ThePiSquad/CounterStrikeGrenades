@@ -94,7 +94,7 @@ private class IncendiaryRenderer(
         val particleEngine = Minecraft.getInstance().particleEngine
         val particleCount = (INCENDIARY_RANGE * INCENDIARY_RANGE * INCENDIARY_PARTICLE_DENSITY).toInt()
 
-        for (i in 0..particleCount) {
+        repeat(particleCount) {
             val pos = getRandomLocationFromCircle(
                 Vec2(data.position.x.toFloat(), data.position.z.toFloat()),
                 INCENDIARY_RANGE

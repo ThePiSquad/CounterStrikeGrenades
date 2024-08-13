@@ -33,7 +33,6 @@ abstract class CounterStrikeGrenadeEntity(
     var isExploded: Boolean = false
 
     var hitBlockSound = ModSoundEvents.GRENADE_HIT.get()
-    var explosionSoundInstance: SoundInstance? = null
 
     companion object {
         val speedAccessor: EntityDataAccessor<Float> =
@@ -106,8 +105,6 @@ abstract class CounterStrikeGrenadeEntity(
         }
 
         // Calculate the movement of the entity
-//        if (this.level() is ServerLevel) {
-        val position = this.position()
         this.setPos(this.xOld, this.yOld, this.zOld)
         if (isLanded || isExploded) {
             return
