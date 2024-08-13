@@ -64,33 +64,39 @@ private class IncendiaryRenderer(
             Minecraft.getInstance().level?.getEntity(data.entityId) ?: player, // don't know why im doing this
             0
         )
+        // Sounds
+        when {
+            this.data.isInAir -> playAirPoppedSound()
+            this.data.extinguished -> playExtinguishSound()
+            else -> playExplosionSound()
+        }
     }
 
     fun update(): Boolean {
-
-        // Check if the fire is extinguished by smoke grenade
-        if (Minecraft.getInstance().level?.getEntity(data.entityId) == null) {
-            playExtinguishSound()
+        if (data.isInAir) {
+            drawAirPoppedParticles()
             return true
-        }
+        } else {
+            if (getTimeFromTickCount(tickCount.toDouble()) > INCENDIARY_LIFETIME) {
+                return true
+            }
 
-        // Sounds
-        when {
-            this.data.extinguished -> playExtinguishSound()
-            tickCount == 0 -> playExplosionSound()//Minecraft.getInstance().soundManager.play(soundInstance)
+            // Check if the fire is extinguished by smoke grenade
+            // Works fine now, but should use a separated message to indicate that the fire is extinguished
+            // rather than detect the entity
+            if (Minecraft.getInstance().level?.getEntity(data.entityId) == null) {
+                playExtinguishSound()
+                return true
+            }
+            drawGroundFireParticles()
         }
-
-        if (getTimeFromTickCount(tickCount.toDouble()) > INCENDIARY_LIFETIME) {
-            return true
-        }
-        drawParticles()
 
         tickCount++
 
         return false
     }
 
-    private fun drawParticles() {
+    private fun drawGroundFireParticles() {
         val particleEngine = Minecraft.getInstance().particleEngine
         val particleCount = (INCENDIARY_RANGE * INCENDIARY_RANGE * INCENDIARY_PARTICLE_DENSITY).toInt()
 
@@ -112,6 +118,24 @@ private class IncendiaryRenderer(
                 0.1,
                 0.0
             )?.lifetime = getLifetimeFromDistance(distance)
+        }
+    }
+
+    private fun drawAirPoppedParticles() {
+        val particleEngine = Minecraft.getInstance().particleEngine
+        val particleCount = 500
+        val randomSource = RandomSource.create()
+
+        repeat(particleCount) {
+            particleEngine.createParticle(
+                ParticleTypes.FLAME,
+                data.position.x,
+                data.position.y,
+                data.position.z,
+                randomSource.nextDouble() - 0.5,
+                randomSource.nextDouble() - 0.5,
+                randomSource.nextDouble() - 0.5,
+            )?.lifetime = 10
         }
     }
 
@@ -139,6 +163,22 @@ private class IncendiaryRenderer(
             SoundSource.AMBIENT,
             SoundUtils.getVolumeFromDistance(distance, SoundTypes.INCENDIARY_POP).toFloat(),
             0.8f,
+            randomSource,
+            data.position.x,
+            data.position.y,
+            data.position.z
+        )
+        Minecraft.getInstance().soundManager.play(extinguishSoundInstance)
+    }
+
+    private fun playAirPoppedSound() {
+        val distance = data.position.distanceTo(Minecraft.getInstance().player!!.position())
+        val randomSource = RandomSource.create()
+        val extinguishSoundInstance = SimpleSoundInstance(
+            ModSoundEvents.INCENDIARY_EXPLODE_AIR.get(),
+            SoundSource.AMBIENT,
+            SoundUtils.getVolumeFromDistance(distance, SoundTypes.INCENDIARY_EXPLODE_AIR).toFloat(),
+            1f,
             randomSource,
             data.position.x,
             data.position.y,

@@ -16,6 +16,7 @@ import java.util.function.Supplier
 class IncendiaryExplodedMessage(
     val entityId: Int,
     val extinguished: Boolean,
+    val isInAir: Boolean,
     @Serializable(with = Vec3Serializer::class) val position: Vec3
 ) {
     companion object {

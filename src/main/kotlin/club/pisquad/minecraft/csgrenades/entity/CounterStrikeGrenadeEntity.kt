@@ -7,7 +7,6 @@ import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
-import net.minecraft.client.resources.sounds.SoundInstance
 import net.minecraft.core.Direction
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers

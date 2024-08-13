@@ -1,6 +1,7 @@
 package club.pisquad.minecraft.csgrenades.entity
 
 import club.pisquad.minecraft.csgrenades.FIRE_EXTINGUISH_RANGE
+import club.pisquad.minecraft.csgrenades.INCENDIARY_FUSE_TIME
 import club.pisquad.minecraft.csgrenades.INCENDIARY_LIFETIME
 import club.pisquad.minecraft.csgrenades.INCENDIARY_RANGE
 import club.pisquad.minecraft.csgrenades.damagesource.IncendiaryDamageSource
@@ -27,6 +28,7 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
 
     var explosionTick = 0
     var extinguished = false
+    var poppedInAir = false
 
     init {
         hitBlockSound = ModSoundEvents.HEGRENADE_BOUNCE.get()
@@ -40,11 +42,7 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
         super.tick()
         if (this.level() is ClientLevel) return
         if (this.isExploded) {
-            // Keep this entity in place
-            this.deltaMovement = Vec3.ZERO
-
             // Damage players within range
-
             val level = this.level() as ServerLevel
             for (player in level.players()) {
                 val distance = player.distanceTo(this).toDouble()
@@ -60,6 +58,13 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
                 this.kill()
                 return
             }
+        }
+        if (!this.isExploded && getTimeFromTickCount(this.tickCount.toDouble()) > INCENDIARY_FUSE_TIME) {
+            this.isExploded = true
+            this.poppedInAir = true
+            sendExplodedMessage()
+            this.kill()
+
         }
     }
 
@@ -97,7 +102,7 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
     fun sendExplodedMessage() {
         CsGrenadePacketHandler.INSTANCE.send(
             PacketDistributor.ALL.noArg(),
-            IncendiaryExplodedMessage(this.id, this.extinguished, this.position())
+            IncendiaryExplodedMessage(this.id, this.extinguished, poppedInAir, this.position())
         )
     }
 
