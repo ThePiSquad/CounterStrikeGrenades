@@ -109,8 +109,17 @@ private class IncendiaryRenderer(
                 data.position.x.minus(pos.x).toFloat(),
                 data.position.z.minus(pos.y).toFloat()
             ).length().toDouble()
+
+            val random = RandomSource.create().nextDouble()
+            val particleType = when {
+                random < 0.2 -> ParticleTypes.SMOKE
+                random < 0.5 -> ParticleTypes.FLAME
+                else -> ParticleTypes.SMALL_FLAME
+            }
+
+
             particleEngine.createParticle(
-                ParticleTypes.SMALL_FLAME,
+                particleType,
                 pos.x.toDouble(),
                 data.position.y,
                 pos.y.toDouble(),
