@@ -20,7 +20,8 @@ enum class SoundTypes(val initialVolume: Double, val hearableRange: Double) {
     HEGRENADE_EXPLODE_DISTANT(3.0, 100.0),
 
     // Incendiary
-    INCENDIARY_EXPLODE(0.15, 50.0)
+    INCENDIARY_EXPLODE(0.15, 50.0),
+    INCENDIARY_POP(0.3, 30.0),
 
 
 }

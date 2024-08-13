@@ -11,13 +11,9 @@ import club.pisquad.minecraft.csgrenades.network.CsGrenadePacketHandler
 import club.pisquad.minecraft.csgrenades.network.message.IncendiaryExplodedMessage
 import club.pisquad.minecraft.csgrenades.registery.ModItems
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
-import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
-import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.sounds.SoundSource
-import net.minecraft.util.RandomSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.item.Item
@@ -71,6 +67,7 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
         // Incendiary Grenade Explodes when hit a walkable surface that is 30 degree or smaller from horizon.
         // But in MC, all grounds are flat and horizontal
         // we only want the server to handle this logic
+        if (this.extinguished) return
         if (this.level() !is ClientLevel) {
             if (this.isExploded || this.isLanded) return
             if (result.direction == Direction.UP) {
@@ -90,10 +87,8 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
                 }
                 sendExplodedMessage()
                 return
-
             }
         }
-
         super.onHitBlock(result)
 
 
@@ -107,18 +102,7 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
     }
 
     fun extinguish() {
-        val randomSource = RandomSource.create()
-        val soundInstance = SimpleSoundInstance(
-            ModSoundEvents.INCENDIARY_POP.get(),
-            SoundSource.AMBIENT,
-            1f,
-            1f,
-            randomSource,
-            this.x,
-            this.y,
-            this.z
-        )
-        Minecraft.getInstance().soundManager.play(soundInstance)
+        this.extinguished = true
         this.kill()
     }
 

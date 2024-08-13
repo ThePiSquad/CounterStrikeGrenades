@@ -13,6 +13,7 @@ import club.pisquad.minecraft.csgrenades.network.message.IncendiaryExplodedMessa
 import club.pisquad.minecraft.csgrenades.registery.ModSoundEvents
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
+import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.resources.sounds.SoundInstance
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.sounds.SoundSource
@@ -69,12 +70,14 @@ private class IncendiaryRenderer(
 
         // Check if the fire is extinguished by smoke grenade
         if (Minecraft.getInstance().level?.getEntity(data.entityId) == null) {
+            playExtinguishSound()
             return true
         }
 
         // Sounds
         when {
-            tickCount == 0 && !this.data.extinguished -> Minecraft.getInstance().soundManager.play(soundInstance)
+            this.data.extinguished -> playExtinguishSound()
+            tickCount == 0 -> playExplosionSound()//Minecraft.getInstance().soundManager.play(soundInstance)
         }
 
         if (getTimeFromTickCount(tickCount.toDouble()) > INCENDIARY_LIFETIME) {
@@ -110,6 +113,38 @@ private class IncendiaryRenderer(
                 0.0
             )?.lifetime = getLifetimeFromDistance(distance)
         }
+    }
+
+    private fun playExplosionSound() {
+        val distance = data.position.distanceTo(Minecraft.getInstance().player!!.position())
+        val randomSource = RandomSource.create()
+        val extinguishSoundInstance = SimpleSoundInstance(
+            ModSoundEvents.INCENDIARY_EXPLODE.get(),
+            SoundSource.AMBIENT,
+            SoundUtils.getVolumeFromDistance(distance, SoundTypes.INCENDIARY_EXPLODE).toFloat(),
+            1f,
+            randomSource,
+            data.position.x,
+            data.position.y,
+            data.position.z
+        )
+        Minecraft.getInstance().soundManager.play(extinguishSoundInstance)
+    }
+
+    private fun playExtinguishSound() {
+        val distance = data.position.distanceTo(Minecraft.getInstance().player!!.position())
+        val randomSource = RandomSource.create()
+        val extinguishSoundInstance = SimpleSoundInstance(
+            ModSoundEvents.INCENDIARY_POP.get(),
+            SoundSource.AMBIENT,
+            SoundUtils.getVolumeFromDistance(distance, SoundTypes.INCENDIARY_POP).toFloat(),
+            0.8f,
+            randomSource,
+            data.position.x,
+            data.position.y,
+            data.position.z
+        )
+        Minecraft.getInstance().soundManager.play(extinguishSoundInstance)
     }
 }
 
