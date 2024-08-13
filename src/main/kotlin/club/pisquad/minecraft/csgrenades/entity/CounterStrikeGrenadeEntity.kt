@@ -32,6 +32,7 @@ abstract class CounterStrikeGrenadeEntity(
     var isExploded: Boolean = false
 
     var hitBlockSound = ModSoundEvents.GRENADE_HIT.get()
+    var throwSound = ModSoundEvents.GRENADE_THROW.get()
 
     companion object {
         val speedAccessor: EntityDataAccessor<Float> =
@@ -66,7 +67,7 @@ abstract class CounterStrikeGrenadeEntity(
      * @return None
      */
     override fun onAddedToWorld() {
-        this.playSound(ModSoundEvents.GRENADE_THROW.get(), 0.2f, 1f)
+        this.playSound(this.throwSound, 0.2f, 1f)
     }
 
     /**

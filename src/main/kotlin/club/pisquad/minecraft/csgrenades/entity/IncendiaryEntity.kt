@@ -32,6 +32,7 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
 
     init {
         hitBlockSound = ModSoundEvents.HEGRENADE_BOUNCE.get()
+        throwSound = ModSoundEvents.INCENDIARY_THROW.get()
     }
 
     override fun getDefaultItem(): Item {
@@ -64,7 +65,6 @@ class IncendiaryEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLe
             this.poppedInAir = true
             sendExplodedMessage()
             this.kill()
-
         }
     }
 
