@@ -63,7 +63,7 @@ object CounterStrikeGrenades {
             )
 
             // Correct way: Use an iterator on the entry set to safely remove.
-            val iterator = event.getEntries().iterator()
+            val iterator = event.entries.iterator()
             while (iterator.hasNext()) {
                 val entry = iterator.next()
                 if (entry.key.item in itemsToRemove) {

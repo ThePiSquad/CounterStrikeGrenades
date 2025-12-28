@@ -45,7 +45,9 @@ class HEGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLev
         super.tick()
 
         // Explosion logic
-        if (getTimeFromTickCount(this.tickCount.toDouble()) > (ModConfig.HEGrenade.FUSE_TIME?.get() ?: 2000) / 1000.0) { // isExploded is checked at the beginning
+        if (getTimeFromTickCount(this.tickCount.toDouble()) > (ModConfig.HEGrenade.FUSE_TIME?.get()
+                ?: 2000) / 1000.0
+        ) { // isExploded is checked at the beginning
             if (!this.level().isClientSide) { // Server
                 this.doDamage()
             } else { // Client
@@ -84,7 +86,9 @@ class HEGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLev
 
                     if (entity == this.owner) {
                         when (ModConfig.HEGrenade.CAUSE_DAMAGE_TO_OWNER.get()) {
-                            ModConfig.SelfDamageSetting.NEVER -> { /* Do nothing */ }
+                            ModConfig.SelfDamageSetting.NEVER -> { /* Do nothing */
+                            }
+
                             ModConfig.SelfDamageSetting.NOT_IN_TEAM -> entity.hurt(baseDamageSource, damage.toFloat())
                             ModConfig.SelfDamageSetting.ALWAYS -> entity.hurt(selfDamageSource, damage.toFloat())
                         }
@@ -139,7 +143,8 @@ class HEGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLev
 
     override fun getHitDamageSource(hitEntity: LivingEntity): DamageSource {
         val registryAccess = this.level().registryAccess()
-        val damageTypeHolder = registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ModDamageType.HEGRENADE_HIT)
+        val damageTypeHolder =
+            registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ModDamageType.HEGRENADE_HIT)
         return if (hitEntity == this.owner) {
             DamageSource(damageTypeHolder, this)
         } else {

@@ -10,7 +10,10 @@ object ModDamageType {
     val HEGRENADE_EXPLOSION: ResourceKey<DamageType> =
         ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation(CounterStrikeGrenades.ID, "hegrenade_explosion"))
     val HEGRENADE_EXPLOSION_SELF: ResourceKey<DamageType> =
-        ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation(CounterStrikeGrenades.ID, "hegrenade_explosion_self"))
+        ResourceKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation(CounterStrikeGrenades.ID, "hegrenade_explosion_self")
+        )
     val HEGRENADE_HIT: ResourceKey<DamageType> =
         ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation(CounterStrikeGrenades.ID, "hegrenade_hit"))
     val INCENDIARY_FIRE: ResourceKey<DamageType> =

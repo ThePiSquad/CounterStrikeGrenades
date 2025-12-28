@@ -105,7 +105,8 @@ object ModConfig {
         HEGrenade.HEAD_DAMAGE_BOOST = builder.defineInRange("head_damage_boost", 1.5, 0.0, 100.0)
         builder.comment("Fuse time before explosion, in milliseconds")
         HEGrenade.FUSE_TIME = builder.defineInRange("fuseTime", 2000L, 0L, 10000L)
-        HEGrenade.CAUSE_DAMAGE_TO_OWNER = builder.defineEnum("causeDamageToOwner", SelfDamageSetting.ALWAYS, SelfDamageSetting.entries)
+        HEGrenade.CAUSE_DAMAGE_TO_OWNER =
+            builder.defineEnum("causeDamageToOwner", SelfDamageSetting.ALWAYS, SelfDamageSetting.entries)
         builder.pop()
 
         builder.push("FireGrenade")
@@ -119,7 +120,8 @@ object ModConfig {
         FireGrenade.DAMAGE = builder.defineInRange("damage", 3.0, 0.0, 100.0)
         builder.comment("In what time should fire damage reach its maximum damage (linearly)")
         FireGrenade.DAMAGE_INCREASE_TIME = builder.defineInRange("damage_increase_time", 2000, 0, 100 * 1000.toLong())
-        FireGrenade.CAUSE_DAMAGE_TO_OWNER = builder.defineEnum("causeDamageToOwner", SelfDamageSetting.ALWAYS, SelfDamageSetting.entries)
+        FireGrenade.CAUSE_DAMAGE_TO_OWNER =
+            builder.defineEnum("causeDamageToOwner", SelfDamageSetting.ALWAYS, SelfDamageSetting.entries)
         builder.pop() // Correctly close FireGrenade section
 
         builder.push("Flashbang")

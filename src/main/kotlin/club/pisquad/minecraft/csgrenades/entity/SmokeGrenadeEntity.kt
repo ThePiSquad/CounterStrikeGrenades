@@ -34,7 +34,6 @@ import java.time.Duration
 import java.time.Instant
 import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.math.sqrt
 import kotlin.random.Random
 
 class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) :
@@ -176,7 +175,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                     this.clientRenderEffect()
                 } else {
                     this.entityData.set(spreadBlocksAccessor, calculateSpreadBlocks())
-                    this.setItem(net.minecraft.world.item.ItemStack.EMPTY)
+                    this.item = net.minecraft.world.item.ItemStack.EMPTY
                 }
                 this.entityData.set(isExplodedAccessor, true)
                 this.explosionTime = Instant.now()
@@ -200,7 +199,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
 
         val smokeRadius = ModConfig.SmokeGrenade.SMOKE_RADIUS.get().toDouble()
         val smokeFallingHeight = ModConfig.SmokeGrenade.SMOKE_MAX_FALLING_HEIGHT.get().toDouble()
-        val smokeCloudBoundingBox = AABB(this.blockPosition()).inflate(smokeRadius).expandTowards(0.0, -smokeFallingHeight, 0.0)
+        val smokeCloudBoundingBox =
+            AABB(this.blockPosition()).inflate(smokeRadius).expandTowards(0.0, -smokeFallingHeight, 0.0)
 
         nearbyArrows.forEach { arrow ->
             // Use a "swept" bounding box to detect fast-moving entities that pass through the cloud in a single tick.
@@ -214,7 +214,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                 // Interpolate position to prevent tunneling
                 val posNow = arrow.position()
                 val posOld = posNow.subtract(delta)
-                val steps = (delta.length() / 0.5).toInt().coerceAtLeast(1).coerceAtMost(30) // Check every 50cm, with a higher cap
+                val steps = (delta.length() / 0.5).toInt().coerceAtLeast(1)
+                    .coerceAtMost(30) // Check every 50cm, with a higher cap
                 for (i in 0..steps) {
                     val interpolatedPos = posOld.lerp(posNow, i.toDouble() / steps)
                     this.clearSmokeWithinRange(interpolatedPos, ModConfig.SmokeGrenade.ARROW_CLEAR_RANGE.get(), i == 0)
@@ -234,7 +235,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
             val smokeCenter = this.position()
             val smokeRadius = ModConfig.SmokeGrenade.SMOKE_RADIUS.get().toDouble()
             val smokeFallingHeight = ModConfig.SmokeGrenade.SMOKE_MAX_FALLING_HEIGHT.get().toDouble()
-            val smokeCloudBoundingBox = AABB(BlockPos.containing(smokeCenter)).inflate(smokeRadius).expandTowards(0.0, -smokeFallingHeight, 0.0)
+            val smokeCloudBoundingBox =
+                AABB(BlockPos.containing(smokeCenter)).inflate(smokeRadius).expandTowards(0.0, -smokeFallingHeight, 0.0)
 
             allRenderEntities.forEach { entity ->
                 // Use a "swept" bounding box to detect fast-moving entities that pass through the cloud in a single tick.
@@ -358,7 +360,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         // it finds the adjacent air block the grenade is actually "poking" into.
         var validatedOrigin = this.blockPosition()
         val originalBlockState = this.level().getBlockState(validatedOrigin)
-        
+
         if (!originalBlockState.getCollisionShape(this.level(), validatedOrigin).isEmpty) {
             // Grenade is in a solid block. Try to find the "opening" using precise position.
             val precisePos = this.position() // Precise float position of the entity
@@ -369,7 +371,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
 
             // Find the dominant axis of this escape vector to determine the direction of the opening.
             val bestDirection = Direction.getNearest(escapeVector.x, escapeVector.y, escapeVector.z)
-            
+
             val potentialOrigin = validatedOrigin.relative(bestDirection, 1)
             if (this.level().getBlockState(potentialOrigin).getCollisionShape(this.level(), potentialOrigin).isEmpty) {
                 validatedOrigin = potentialOrigin
@@ -380,7 +382,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                     validatedOrigin.north(), validatedOrigin.south(),
                     validatedOrigin.east(), validatedOrigin.west()
                 ).firstOrNull { pos -> this.level().getBlockState(pos).getCollisionShape(this.level(), pos).isEmpty }
-                
+
                 validatedOrigin = firstEmptyNeighbor ?: validatedOrigin.above(2) // As a last resort, go 2 blocks up.
             }
         }
@@ -408,7 +410,9 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
             var hitGround = false
             var currentPos = lowestBlock
             for (i in 0 until maxFallHeight) {
-                if (this.level().getBlockState(currentPos.below()).getCollisionShape(this.level(), currentPos.below()).isEmpty) {
+                if (this.level().getBlockState(currentPos.below())
+                        .getCollisionShape(this.level(), currentPos.below()).isEmpty
+                ) {
                     fallDistance++
                     currentPos = currentPos.below()
                 } else {
@@ -440,7 +444,9 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         // Find max distance from center for normalization
         var maxDist = 0.0
         for (key in smokeColumns.keys) {
-            val dist = kotlin.math.sqrt((key.first - centerKey.first).toDouble().pow(2.0) + (key.second - centerKey.second).toDouble().pow(2.0))
+            val dist = kotlin.math.sqrt(
+                (key.first - centerKey.first).toDouble().pow(2.0) + (key.second - centerKey.second).toDouble().pow(2.0)
+            )
             if (dist > maxDist) maxDist = dist
         }
         maxDist = maxDist.coerceAtLeast(1.0) // Avoid division by zero
@@ -448,7 +454,9 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         for ((key, columnBlocks) in smokeColumns) {
             val rawFallDistance = columnFallInfo[key] ?: 0
 
-            val distFromCenter = kotlin.math.sqrt((key.first - centerKey.first).toDouble().pow(2.0) + (key.second - centerKey.second).toDouble().pow(2.0))
+            val distFromCenter = kotlin.math.sqrt(
+                (key.first - centerKey.first).toDouble().pow(2.0) + (key.second - centerKey.second).toDouble().pow(2.0)
+            )
 
             // Weight is high (1.0) at the center, and low (0.0) at the max distance.
             val weight = (1.0 - (distFromCenter / maxDist)).coerceIn(0.0, 1.0)
@@ -467,7 +475,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
 
     override fun getHitDamageSource(hitEntity: LivingEntity): DamageSource {
         val registryAccess = this.level().registryAccess()
-        val damageTypeHolder = registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ModDamageType.SMOKEGRENADE_HIT)
+        val damageTypeHolder =
+            registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ModDamageType.SMOKEGRENADE_HIT)
         return if (hitEntity == this.owner) {
             DamageSource(damageTypeHolder, this)
         } else {

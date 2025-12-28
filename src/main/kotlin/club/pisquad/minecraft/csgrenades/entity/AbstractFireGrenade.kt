@@ -228,15 +228,21 @@ abstract class AbstractFireGrenade(
         val fullDamage = ModConfig.FireGrenade.DAMAGE.get().toFloat()
         val minDamage = fullDamage * 0.25f // Define minimum damage as 25% of full damage
 
-        val damageTypeHolder = level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(getFireDamageType())
-        val selfDamageTypeHolder = level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(getSelfFireDamageType())
+        val damageTypeHolder =
+            level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(getFireDamageType())
+        val selfDamageTypeHolder =
+            level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(getSelfFireDamageType())
 
         entitiesInRange.forEach { entity ->
 
             val finalDamageSource = if (entity == this.owner) {
                 when (ModConfig.FireGrenade.CAUSE_DAMAGE_TO_OWNER.get()) {
                     ModConfig.SelfDamageSetting.NEVER -> null // Skip damage
-                    ModConfig.SelfDamageSetting.NOT_IN_TEAM -> DamageSource(damageTypeHolder, this, this.owner) // Vanilla team check
+                    ModConfig.SelfDamageSetting.NOT_IN_TEAM -> DamageSource(
+                        damageTypeHolder,
+                        this,
+                        this.owner
+                    ) // Vanilla team check
                     ModConfig.SelfDamageSetting.ALWAYS -> DamageSource(selfDamageTypeHolder) // Bypass team check
                 }
             } else {

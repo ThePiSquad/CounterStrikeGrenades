@@ -47,7 +47,10 @@ object SetConfigCommand {
                             .then(
                                 Commands.argument("value", com.mojang.brigadier.arguments.BoolArgumentType.bool())
                                     .executes { context ->
-                                        setGlobalIgnoreBarrier(context, com.mojang.brigadier.arguments.BoolArgumentType.getBool(context, "value"))
+                                        setGlobalIgnoreBarrier(
+                                            context,
+                                            com.mojang.brigadier.arguments.BoolArgumentType.getBool(context, "value")
+                                        )
                                     }
                             )
                     )
@@ -65,7 +68,11 @@ object SetConfigCommand {
         return 1
     }
 
-    private fun setGrenadeSpecificConfig(context: CommandContext<CommandSourceStack>, grenadeType: String, value: String): Int {
+    private fun setGrenadeSpecificConfig(
+        context: CommandContext<CommandSourceStack>,
+        grenadeType: String,
+        value: String
+    ): Int {
         val source = context.source
         val configValue = try {
             ModConfig.SelfDamageSetting.valueOf(value.uppercase())

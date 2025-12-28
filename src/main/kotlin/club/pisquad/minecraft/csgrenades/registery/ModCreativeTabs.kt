@@ -8,7 +8,8 @@ import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.RegistryObject
 
 object ModCreativeTabs {
-    val CREATIVE_MODE_TABS: DeferredRegister<CreativeModeTab> = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CounterStrikeGrenades.ID)
+    val CREATIVE_MODE_TABS: DeferredRegister<CreativeModeTab> =
+        DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CounterStrikeGrenades.ID)
 
     val CSGRENADES_TAB: RegistryObject<CreativeModeTab> = CREATIVE_MODE_TABS.register("csgrenades_tab") {
         CreativeModeTab.builder()

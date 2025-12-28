@@ -42,7 +42,8 @@ class FlashBangEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLev
 
     override fun getHitDamageSource(hitEntity: LivingEntity): DamageSource {
         val registryAccess = this.level().registryAccess()
-        val damageTypeHolder = registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ModDamageType.FLASHBANG_HIT)
+        val damageTypeHolder =
+            registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ModDamageType.FLASHBANG_HIT)
         return if (hitEntity == this.owner) {
             DamageSource(damageTypeHolder, this)
         } else {

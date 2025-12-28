@@ -35,7 +35,7 @@ object FlashbangParticleEffectRenderer {
             val timeNowEpoch = Instant.now().toEpochMilli()
             val level = Minecraft.getInstance().level ?: return
             renderingPlayers.filter { it.value < timeNowEpoch }.forEach { renderingPlayers.remove(it.key) }
-            renderingPlayers.forEach { (uuid, time) ->
+            renderingPlayers.forEach { (uuid, _) ->
                 level.getPlayerByUUID(uuid)?.let { createParticleAtPlayer(it) }
             }
         }

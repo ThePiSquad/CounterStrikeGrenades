@@ -62,5 +62,5 @@ object ModEntities {
         ).sized(GRENADE_ENTITY_SIZE, GRENADE_ENTITY_SIZE)
             .build(ResourceLocation(CounterStrikeGrenades.ID, "decoy").toString())
     }
-    
+
 }
