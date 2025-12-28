@@ -7,7 +7,8 @@
 | ![HE Grenade](assets/he.png) | ![Flash Bang](assets/flashbang.png) | ![Decoy](assets/decoy.png) | ![Incendiary Grenade](assets/incendiary.png) | ![Smoke Grenade](assets/smokegrenade.png) | ![Molotov](assets/molotov.png)
 |:--------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------|:---------------------------------------------------------------------------|:---------------------------------------------------------------------------|
 
-This mod provides utilities in CS2(with smoke falling mechanics) to Minecraft
+This mod provides utilities in CS2 to Minecraft <br>
+*optional integrations with TACZ*
 
 # Counter Strike Grenade
 
@@ -221,5 +222,6 @@ The mod currently supports the following languages:
   - [cloudnode-pro/modrinth-publish: A GitHub Action for publishing plugin versions to Modrinth](https://github.com/cloudnode-pro/modrinth-publish)
 
 ## Contributor
-- Programm: [@yurinekoai](https://github.com/yurinekoai), [@Dragonzhi](https://github.com/Dragonzhi)
+
+- Code: [@hukening81](https://github.com/hukening81), [@Dragonzhi](https://github.com/Dragonzhi)
 - Assets: [@Dragonzhi](https://github.com/Dragonzhi)
