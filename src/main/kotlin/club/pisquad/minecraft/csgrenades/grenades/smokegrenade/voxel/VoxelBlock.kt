@@ -5,7 +5,9 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.tags.BlockTags
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.BedBlock
 import net.minecraft.world.level.block.CrossCollisionBlock
+import net.minecraft.world.level.block.FenceGateBlock
 import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.*
@@ -25,6 +27,8 @@ object VoxelBlockDelegator {
         add(DoorVoxelBlock)
         add(TrapdoorVoxelBlock)
         add(SignVoxelBlock)
+        add(BedVoxelBlock)
+        add(FenceGateVoxelBlock)
         add(AirVoxelBlock)
     }
 
@@ -50,9 +54,10 @@ object AirVoxelBlock : VoxelBlock {
         return buildMap {
             Quadrant.entries.forEach {
                 put(
-                    it, ComputeVoxel(
-                        VoxelPos.fromBlockAndQuadrant(context.position, it),
+                    it, ComputeVoxel.create(
+                        context.position, it,
                         ComputeVoxel.Connectivity.ALL,
+                        false
                     )
                 )
             }
@@ -69,8 +74,8 @@ object SolidVoxelBlock : VoxelBlock {
         return buildMap {
             Quadrant.entries.forEach {
                 put(
-                    it, ComputeVoxel(
-                        VoxelPos.fromBlockAndQuadrant(context.position, it),
+                    it, ComputeVoxel.create(
+                        context.position, it,
                         ComputeVoxel.Connectivity.NONE,
                     )
                 )
@@ -107,10 +112,9 @@ object DoorVoxelBlock : VoxelBlock {
                     ComputeVoxel.Connectivity.ALL
                 }
                 put(
-                    it, ComputeVoxel(
-                        VoxelPos.fromBlockAndQuadrant(context.position, it),
+                    it, ComputeVoxel.create(
+                        context.position, it,
                         connectivity,
-                        true,
                     )
                 )
             }
@@ -145,10 +149,9 @@ object TrapdoorVoxelBlock : VoxelBlock {
                     ComputeVoxel.Connectivity.ALL
                 }
                 put(
-                    it, ComputeVoxel(
-                        VoxelPos.fromBlockAndQuadrant(context.position, it),
+                    it, ComputeVoxel.create(
+                        context.position, it,
                         connectivity,
-                        true
                     )
                 )
             }
@@ -162,7 +165,16 @@ object SignVoxelBlock : VoxelBlock {
     }
 
     override fun voxels(context: VoxelBlockContext): Map<Quadrant, ComputeVoxel> {
-        return AirVoxelBlock.voxels(context)
+        return buildMap {
+            Quadrant.entries.forEach {
+                put(
+                    it, ComputeVoxel.create(
+                        context.position, it,
+                        ComputeVoxel.Connectivity.ALL
+                    )
+                )
+            }
+        }
     }
 }
 
@@ -189,7 +201,6 @@ object SlabVoxelBlock : VoxelBlock {
                     it, ComputeVoxel(
                         VoxelPos.fromBlockAndQuadrant(context.position, it),
                         connectivity,
-                        true
                     )
                 )
             }
@@ -198,6 +209,10 @@ object SlabVoxelBlock : VoxelBlock {
 }
 
 object CrossCollisionVoxelBlock : VoxelBlock {
+
+    // Iron bars
+    // Fences
+    // Glass panes
     override fun check(context: VoxelBlockContext): Boolean {
         return context.blockState.block is CrossCollisionBlock
     }
@@ -245,10 +260,9 @@ object CrossCollisionVoxelBlock : VoxelBlock {
         return buildMap {
             quadrantConnectivity.forEach { (quadrant, directions) ->
                 put(
-                    quadrant, ComputeVoxel(
-                        VoxelPos.fromBlockAndQuadrant(context.position, quadrant),
+                    quadrant, ComputeVoxel.create(
+                        context.position, quadrant,
                         ComputeVoxel.Connectivity.from(*directions.toTypedArray()),
-                        true
                     )
                 )
             }
@@ -312,8 +326,65 @@ object StairVoxelBlock : VoxelBlock {
                 } else {
                     ComputeVoxel.Connectivity.ALL
                 }
-                put(it, ComputeVoxel(VoxelPos.fromBlockAndQuadrant(context.position, it), connectivity, true))
+                put(it, ComputeVoxel.create(context.position, it, connectivity))
             }
         }
     }
+}
+
+object BedVoxelBlock : VoxelBlock {
+    override fun check(context: VoxelBlockContext): Boolean {
+        return context.blockState.block is BedBlock
+    }
+
+    override fun voxels(context: VoxelBlockContext): Map<Quadrant, ComputeVoxel> {
+        return buildMap {
+            Quadrant.entries.forEach {
+                put(
+                    it, ComputeVoxel.create(
+                        context.position, it,
+                        ComputeVoxel.Connectivity.exclude(it.y.opposite),
+                    )
+                )
+            }
+        }
+    }
+}
+
+object FenceGateVoxelBlock : VoxelBlock {
+    // Fence is handled by CrossCollisionVoxelBlock
+    override fun check(context: VoxelBlockContext): Boolean {
+        return context.blockState.block is FenceGateBlock
+    }
+
+    override fun voxels(context: VoxelBlockContext): Map<Quadrant, ComputeVoxel> {
+        val opened = context.blockState.getValue(BlockStateProperties.OPEN)
+        val facing = context.blockState.getValue(BlockStateProperties.HORIZONTAL_FACING)
+
+        val axis = facing.axis
+
+        val getConnectivity = { quadrant: Quadrant ->
+            if (axis == Direction.Axis.X) {
+                ComputeVoxel.Connectivity.exclude(quadrant.x.opposite)
+            } else {
+                ComputeVoxel.Connectivity.exclude(quadrant.z.opposite)
+            }
+        }
+
+        return buildMap {
+            Quadrant.entries.forEach {
+                val connectivity = if (opened) {
+                    ComputeVoxel.Connectivity.ALL
+                } else {
+                    getConnectivity(it)
+                }
+
+                put(
+                    it, ComputeVoxel.create(context.position, it, connectivity)
+                )
+            }
+        }
+    }
+
+
 }

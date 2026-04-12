@@ -1,6 +1,8 @@
 package club.pisquad.minecraft.csgrenades.grenades.smokegrenade.voxel
 
+import club.pisquad.minecraft.csgrenades.math.Quadrant
 import kotlinx.serialization.Serializable
+import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import java.util.*
 import java.util.function.IntFunction
@@ -57,11 +59,26 @@ class VoxelDebug(
 class ComputeVoxel(
     val position: VoxelPos,
     val connectivity: Connectivity,
-    val special: Boolean = false,
+    val special: Boolean = true,
     var intensity: Int = 0,
     val spreadDecay: Int = 1,
     var parent: Direction? = null
 ) {
+    companion object {
+        fun create(
+            blockPos: BlockPos,
+            quadrant: Quadrant,
+            connectivity: Connectivity,
+            special: Boolean = true
+        ): ComputeVoxel {
+            return ComputeVoxel(
+                VoxelPos.fromBlockAndQuadrant(blockPos, quadrant),
+                connectivity,
+                special
+            )
+        }
+    }
+
     class Connectivity private constructor(
         private val inner: EnumSet<Direction>
     ) : Set<Direction> by inner {
