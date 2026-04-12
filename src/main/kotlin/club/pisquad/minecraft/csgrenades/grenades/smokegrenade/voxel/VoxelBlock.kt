@@ -6,11 +6,9 @@ import net.minecraft.core.Direction
 import net.minecraft.tags.BlockTags
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.CrossCollisionBlock
+import net.minecraft.world.level.block.StairBlock
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.block.state.properties.BlockStateProperties
-import net.minecraft.world.level.block.state.properties.DoorHingeSide
-import net.minecraft.world.level.block.state.properties.Half
-import net.minecraft.world.level.block.state.properties.SlabType
+import net.minecraft.world.level.block.state.properties.*
 import java.util.*
 
 sealed interface VoxelBlock {
@@ -22,6 +20,7 @@ object VoxelBlockDelegator {
     val candidates: List<VoxelBlock> = buildList {
         add(SolidVoxelBlock)
         add(SlabVoxelBlock)
+        add(StairVoxelBlock)
         add(CrossCollisionVoxelBlock)
         add(DoorVoxelBlock)
         add(TrapdoorVoxelBlock)
@@ -252,6 +251,68 @@ object CrossCollisionVoxelBlock : VoxelBlock {
                         true
                     )
                 )
+            }
+        }
+    }
+}
+
+object StairVoxelBlock : VoxelBlock {
+    override fun check(context: VoxelBlockContext): Boolean {
+        return context.blockState.block is StairBlock
+    }
+
+    override fun voxels(context: VoxelBlockContext): Map<Quadrant, ComputeVoxel> {
+        val facing = context.blockState.getValue(BlockStateProperties.HORIZONTAL_FACING)
+        val shape = context.blockState.getValue(BlockStateProperties.STAIRS_SHAPE)
+        val half = context.blockState.getValue(BlockStateProperties.HALF)
+
+        val left = facing.counterClockWise
+        val right = facing.clockWise
+
+        val solidParts = mutableSetOf<Quadrant>()
+
+        when (half) {
+            Half.TOP -> {
+                solidParts.addAll(Quadrant.Regions.UP)
+            }
+
+            Half.BOTTOM -> {
+                solidParts.addAll(Quadrant.Regions.DOWN)
+            }
+        }
+
+        when (shape) {
+            StairsShape.STRAIGHT -> {
+                solidParts.addAll(Quadrant.Regions.fromDirection(facing))
+            }
+
+            StairsShape.INNER_LEFT -> {
+                solidParts.addAll(Quadrant.Regions.fromDirection(facing))
+                solidParts.addAll(Quadrant.Regions.fromDirection(left))
+            }
+
+            StairsShape.INNER_RIGHT -> {
+                solidParts.addAll(Quadrant.Regions.fromDirection(facing))
+                solidParts.addAll(Quadrant.Regions.fromDirection(right))
+            }
+
+            StairsShape.OUTER_LEFT -> {
+                solidParts.addAll(Quadrant.Regions.fromDirection(facing, left))
+            }
+
+            StairsShape.OUTER_RIGHT -> {
+                solidParts.addAll(Quadrant.Regions.fromDirection(facing, right))
+            }
+        }
+
+        return buildMap {
+            Quadrant.entries.forEach {
+                val connectivity = if (solidParts.contains(it)) {
+                    ComputeVoxel.Connectivity.NONE
+                } else {
+                    ComputeVoxel.Connectivity.ALL
+                }
+                put(it, ComputeVoxel(VoxelPos.fromBlockAndQuadrant(context.position, it), connectivity, true))
             }
         }
     }

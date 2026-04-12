@@ -42,6 +42,35 @@ enum class Quadrant(val z: Direction, val x: Direction, val y: Direction) {
         }!!
     }
 
+    object Regions {
+        val UP: Set<Quadrant> = Quadrant.entries.filter { it.y == Direction.UP }.toSet()
+        val DOWN: Set<Quadrant> = Quadrant.entries.filter { it.y == Direction.DOWN }.toSet()
+        val NORTH: Set<Quadrant> = Quadrant.entries.filter { it.z == Direction.NORTH }.toSet()
+        val SOUTH: Set<Quadrant> = Quadrant.entries.filter { it.z == Direction.SOUTH }.toSet()
+        val WEST: Set<Quadrant> = Quadrant.entries.filter { it.x == Direction.WEST }.toSet()
+        val EAST: Set<Quadrant> = Quadrant.entries.filter { it.x == Direction.EAST }.toSet()
+
+        fun fromDirection(direction: Direction): Set<Quadrant> {
+            return when (direction) {
+                Direction.DOWN -> DOWN
+                Direction.UP -> UP
+                Direction.NORTH -> NORTH
+                Direction.SOUTH -> SOUTH
+                Direction.WEST -> WEST
+                Direction.EAST -> EAST
+            }
+        }
+
+        fun fromDirection(d1: Direction, d2: Direction): Set<Quadrant> {
+            require(d1.axis.isHorizontal)
+            require(d2.axis.isHorizontal)
+            require(d1.axis != d2.axis)
+
+            return Quadrant.entries.filter {
+                (it.x == d1 && it.z == d2) || (it.z == d1 && it.x == d2)
+            }.toSet()
+        }
+    }
 }
 
 //

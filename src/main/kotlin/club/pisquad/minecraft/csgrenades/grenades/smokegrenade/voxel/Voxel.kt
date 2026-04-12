@@ -87,10 +87,6 @@ class ComputeVoxel(
     }
 
     fun triggerIntensityUpdate(direction: Direction, newIntensity: Int): Boolean {
-        if (this.special) {
-            println("DDDDDDD")
-        }
-
         return if (connectivity.contains(direction) && newIntensity > intensity) {
             intensity = newIntensity
             parent = direction
