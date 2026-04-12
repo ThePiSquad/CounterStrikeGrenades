@@ -68,6 +68,7 @@ object AirVoxelBlock : VoxelBlock {
 object SolidVoxelBlock : VoxelBlock {
     override fun check(context: VoxelBlockContext): Boolean {
         return context.blockState.isCollisionShapeFullBlock(context.level, context.position)
+                || !context.blockState.fluidState.isEmpty // Also check for waterlogged blocks
     }
 
     override fun voxels(context: VoxelBlockContext): Map<Quadrant, ComputeVoxel> {
