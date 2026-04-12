@@ -23,17 +23,4 @@ class SegmentTest {
         assertEquals(Direction.WEST, result.second)
         assertEquals(Vec3(1.0, 0.5, 0.5), result.first)
     }
-
-    @Test
-    fun divideAlongAxis() {
-    }
-
-    @Test
-    fun divide() {
-    }
-
-    @Test
-    fun getPointByAxis() {
-    }
-
 }

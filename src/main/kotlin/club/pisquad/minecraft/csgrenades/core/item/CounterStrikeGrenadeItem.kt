@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState
 abstract class CounterStrikeGrenadeItem(properties: Properties) :
     Item(properties.stacksTo(2)), WithGrenadeType {
     val defaultModifiers: ImmutableMultimap<Attribute, AttributeModifier>
-    
+
     var lastSelected = false
 
     init {

@@ -12,6 +12,6 @@ object ModRenderTypes {
     @JvmStatic
     @SubscribeEvent
     fun onRegisterShader(event: RegisterShadersEvent) {
-    
+
     }
 }

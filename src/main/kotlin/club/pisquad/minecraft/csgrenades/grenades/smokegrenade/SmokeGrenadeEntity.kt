@@ -1,11 +1,12 @@
 package club.pisquad.minecraft.csgrenades.grenades.smokegrenade
 
 import club.pisquad.minecraft.csgrenades.GrenadeType
+import club.pisquad.minecraft.csgrenades.ModLogger
 import club.pisquad.minecraft.csgrenades.config.ModConfig
 import club.pisquad.minecraft.csgrenades.core.entity.impl.ActivateAfterLandingGrenadeEntity
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.data.AttachedSmokeData
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.messages.SmokeGrenadeActivatedMessage
-import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.voxel.RegionVoxelState
+import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.voxel.VoxelMap
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.voxel.VoxelWorker
 import club.pisquad.minecraft.csgrenades.network.ModPacketHandler
 import club.pisquad.minecraft.csgrenades.runOnServer
@@ -52,8 +53,11 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out SmokeGrenadeEntity>, pLevel
         super.activate()
         this.runOnServer {
             val time = System.currentTimeMillis()
-            val region = voxelWorker!!.blockingUntilComplete()
-            val data = AttachedSmokeData.SmokeData(time, region)
+            val voxelMap = voxelWorker!!.blockingUntilComplete()
+
+            ModLogger.info(this) { "Voxel calculation done, none empty voxel count:{}".format(voxelMap.size) }
+
+            val data = AttachedSmokeData.SmokeData(time, voxelMap)
             this.entityData.set(smokeDataAccessor, data)
 
             val message = SmokeGrenadeActivatedMessage(
@@ -64,12 +68,12 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out SmokeGrenadeEntity>, pLevel
         }
     }
 
-    fun getRegion(): RegionVoxelState? {
+    fun getVoxels(): VoxelMap? {
         val data = this.entityData.get(smokeDataAccessor)
         return if (data is AttachedSmokeData.EmptySmokeData) {
             null
         } else {
-            (data as AttachedSmokeData.SmokeData).region
+            (data as AttachedSmokeData.SmokeData).voxels
         }
     }
 }

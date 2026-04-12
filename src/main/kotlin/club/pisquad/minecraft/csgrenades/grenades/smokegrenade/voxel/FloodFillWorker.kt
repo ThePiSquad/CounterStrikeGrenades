@@ -1,21 +1,22 @@
 package club.pisquad.minecraft.csgrenades.grenades.smokegrenade.voxel
 
+import club.pisquad.minecraft.csgrenades.config.ModConfig
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.utils.SmokeShapeHelper
-import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.Vec3
 
 class FloodFillWorker(
-    val origin: Vec3,
+    val center: Vec3,
     val voxels: RegionVoxelState
 ) {
-    var cycleStart: List<BlockPos> = listOf()
+    var cycleStart: Set<VoxelPos> = setOf()
 
     fun compute(): RegionVoxelState {
+        val centerPosition = VoxelPos.containing(center)
+        voxels[centerPosition]!!.intensity = ModConfig.smokegrenade.initialIntensity.get()
 
-        cycleStart = doInitialSpread()
+        cycleStart = setOf(centerPosition)
 
-        // Basic Shape
         while (cycleStart.isNotEmpty()) {
             cycleStart = computeCurrentCycle()
         }
@@ -26,49 +27,28 @@ class FloodFillWorker(
         return voxels.filterNonEmpty()
     }
 
-    private fun doInitialSpread(): List<BlockPos> {
-        val centerBlockPos = BlockPos.containing(origin)
-        val centerVoxel = voxels[centerBlockPos] ?: return emptyList()
-
-        return centerVoxel.asOrigin(origin).map {
-            it.run {
-                val target = centerBlockPos.relative(it)
-                val voxel = voxels[target] ?: return@run null
-
-                val needUpdate = voxel.updateIntensity(
-                    this.opposite,
-                    centerVoxel.getNeighborIntensity(this)
-                )
-                if (needUpdate) {
-                    target
-                } else {
-                    null
-                }
-            }
-        }.filterNotNull()
-    }
-
-
-    private fun computeCurrentCycle(): List<BlockPos> {
-        val nextCycle: MutableList<BlockPos> = mutableListOf()
+    private fun computeCurrentCycle(): Set<VoxelPos> {
+        val nextCycle: MutableSet<VoxelPos> = mutableSetOf()
 
         for (ele in cycleStart) {
             voxels[ele]?.run {
-                Direction.entries.forEach {
-                    val intensity = this.getNeighborIntensity(it)
-                    val target = ele.relative(it)
+                Direction.entries
+                    .filter { this.connectivity.contains(it) }
+                    .forEach {
+                        val intensity = this.neighborIntensity(it)
+                        val target = ele.relative(it)
 
-                    if (!SmokeShapeHelper.isInsideBaseShape(origin, target.center)) {
-                        return@forEach
+                        if (!SmokeShapeHelper.isInsideBaseShape(center, target.center)) {
+                            return@forEach
+                        }
+
+                        val voxel = voxels[target] ?: return@forEach
+
+                        val needUpdate = voxel.triggerIntensityUpdate(it.opposite, intensity)
+                        if (needUpdate) {
+                            nextCycle.add(target)
+                        }
                     }
-
-                    val voxel = voxels[target] ?: return@forEach
-
-                    val needUpdate = voxel.updateIntensity(it.opposite, intensity)
-                    if (needUpdate) {
-                        nextCycle.add(target)
-                    }
-                }
             }
         }
         return nextCycle

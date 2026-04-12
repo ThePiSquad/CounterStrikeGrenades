@@ -40,6 +40,12 @@ object ModLogger {
         }
     }
 
+    fun error(entity: CounterStrikeGrenadeEntity, msg: () -> String) {
+        if (logger.isErrorEnabled) {
+            logger.error(constructEntityLogString(entity, msg))
+        }
+    }
+
     // Action time logger
     fun debug(duration: Duration, name: String) {
         if (logger.isDebugEnabled) {

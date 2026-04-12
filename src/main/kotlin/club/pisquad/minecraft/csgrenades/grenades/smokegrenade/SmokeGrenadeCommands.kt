@@ -3,7 +3,7 @@ package club.pisquad.minecraft.csgrenades.grenades.smokegrenade
 import club.pisquad.minecraft.csgrenades.CounterStrikeGrenades
 import club.pisquad.minecraft.csgrenades.GrenadeType
 import club.pisquad.minecraft.csgrenades.command.GrenadeCommandBuilder
-import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.debug.SmokeGrenadeDebugState
+import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.debug.SmokeGrenadeDebugOptions
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.BoolArgumentType
 import net.minecraft.commands.CommandSourceStack
@@ -18,7 +18,8 @@ object SmokeGrenadeCommands : GrenadeCommandBuilder {
                         Commands.literal("debug").then(
                             Commands.literal("showVoxelOutline").then(
                                 Commands.argument("state", BoolArgumentType.bool()).executes { context ->
-                                    SmokeGrenadeDebugState.showVoxelOutline = BoolArgumentType.getBool(context, "state")
+                                    SmokeGrenadeDebugOptions.Outline.showOutline =
+                                        BoolArgumentType.getBool(context, "state")
                                     0
                                 }
                             )

@@ -16,7 +16,7 @@ object ModDamageTypes {
         return ResourceKey.create(
             Registries.DAMAGE_TYPE,
             ResourceLocation(
-                CounterStrikeGrenades.Companion.ID, path,
+                CounterStrikeGrenades.ID, path,
             ),
         )
     }

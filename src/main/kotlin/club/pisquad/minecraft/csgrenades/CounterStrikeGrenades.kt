@@ -15,7 +15,7 @@ class CounterStrikeGrenades(context: FMLJavaModLoadingContext) {
 
     init {
         ModLogger.info("Initializing Mod -- Common Setup")
-        
+
         RegistryHelper.commonSetup(context.modEventBus)
 
         ModPacketHandler.register()

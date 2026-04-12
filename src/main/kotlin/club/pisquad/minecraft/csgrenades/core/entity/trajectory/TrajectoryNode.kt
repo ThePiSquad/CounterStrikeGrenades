@@ -29,8 +29,7 @@ class TickNode(
     val subtickNodes: MutableList<SubtickNode> = mutableListOf(),
 ) : TrajectoryNode {
 
-    companion object {
-    }
+    companion object;
 
     /**Calculates the subtick nodes within this tick
      * @return Next TickNode
@@ -153,7 +152,7 @@ data class SubtickNode(
     val bounceData: BounceData?
 ) : TrajectoryNode {
     @Serializable
-    sealed class BounceData;
+    sealed class BounceData
 
     @Serializable
     class BlockBounceData(
@@ -167,5 +166,5 @@ data class SubtickNode(
     class EntityBounceData(
         val id: Int,
         @Serializable(with = Vec3Serializer::class) val position: Vec3,
-    ) : BounceData();
+    ) : BounceData()
 }

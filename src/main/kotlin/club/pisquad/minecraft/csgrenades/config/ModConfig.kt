@@ -1,13 +1,6 @@
 package club.pisquad.minecraft.csgrenades.config
 
-import club.pisquad.minecraft.csgrenades.config.sections.DecoyConfig
-import club.pisquad.minecraft.csgrenades.config.sections.FlashBangConfig
-import club.pisquad.minecraft.csgrenades.config.sections.HEGrenadeConfig
-import club.pisquad.minecraft.csgrenades.config.sections.IncendiaryConfig
-import club.pisquad.minecraft.csgrenades.config.sections.MolotovConfig
-import club.pisquad.minecraft.csgrenades.config.sections.PhysicsConfig
-import club.pisquad.minecraft.csgrenades.config.sections.SmokeGrenadeConfig
-import club.pisquad.minecraft.csgrenades.config.sections.ThrowConfig
+import club.pisquad.minecraft.csgrenades.config.sections.*
 import net.minecraftforge.common.ForgeConfigSpec
 
 object ModConfig {

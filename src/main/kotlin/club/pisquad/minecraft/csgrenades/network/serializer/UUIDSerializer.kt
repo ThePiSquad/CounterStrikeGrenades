@@ -9,7 +9,7 @@ import kotlinx.serialization.encoding.Encoder
 import net.minecraft.core.UUIDUtil
 import java.util.*
 
-class UUIDSerializer : KSerializer<UUID> {
+object UUIDSerializer : KSerializer<UUID> {
     private val delegateSerializer = IntArraySerializer()
 
     @OptIn(ExperimentalSerializationApi::class)

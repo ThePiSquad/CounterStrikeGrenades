@@ -32,7 +32,8 @@ class VoxelWorker(entity: SmokeGrenadeEntity) {
         val ComputeScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     }
 
-    fun blockingUntilComplete(): RegionVoxelState {
-        return runBlocking { coroutineWorker.await() }
+    fun blockingUntilComplete(): VoxelMap {
+        val result = runBlocking { coroutineWorker.await() }
+        return VoxelMap(result.mapValues { (_, value) -> value.toVoxel() }).filterNonEmpty()
     }
 }

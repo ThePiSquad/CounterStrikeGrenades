@@ -212,3 +212,11 @@ fun <T : CounterStrikeGrenadeEntity> T.runOnClient(task: T.() -> Unit) {
         task(this)
     }
 }
+
+internal fun Boolean.toInt(): Int {
+    return if (this) {
+        1
+    } else {
+        0
+    }
+}
