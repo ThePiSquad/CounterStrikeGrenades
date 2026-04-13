@@ -5,10 +5,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.tags.BlockTags
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.BedBlock
-import net.minecraft.world.level.block.CrossCollisionBlock
-import net.minecraft.world.level.block.FenceGateBlock
-import net.minecraft.world.level.block.StairBlock
+import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.*
 import java.util.*
@@ -29,6 +26,7 @@ object VoxelBlockDelegator {
         add(SignVoxelBlock)
         add(BedVoxelBlock)
         add(FenceGateVoxelBlock)
+        add(ChessVoxelBlock)
         add(AirVoxelBlock)
     }
 
@@ -386,6 +384,48 @@ object FenceGateVoxelBlock : VoxelBlock {
             }
         }
     }
+}
 
+object ChessVoxelBlock : VoxelBlock {
+    override fun check(context: VoxelBlockContext): Boolean {
+        return context.blockState.block is AbstractChestBlock<*>
+    }
 
+    override fun voxels(context: VoxelBlockContext): Map<Quadrant, ComputeVoxel> {
+        val facing = context.blockState.getValue(BlockStateProperties.HORIZONTAL_FACING)
+        val type = context.blockState.getValue(BlockStateProperties.CHEST_TYPE)
+        val blockingSide = getBlockingSide(facing, type)
+
+        return buildMap {
+            Quadrant.entries.forEach { quadrant ->
+                val excludeList = buildList {
+                    add(quadrant.x.opposite)
+                    add(quadrant.y.opposite)
+                    add(quadrant.z.opposite)
+                    if (quadrant.x == blockingSide) {
+                        add(quadrant.x)
+                    }
+                    if (quadrant.z == blockingSide) {
+                        add(quadrant.z)
+                    }
+                }
+                val connectivity = ComputeVoxel.Connectivity.exclude(*excludeList.toTypedArray())
+                put(quadrant, ComputeVoxel.create(context.position, quadrant, connectivity))
+            }
+        }
+    }
+
+    private fun getBlockingSide(facing: Direction, type: ChestType): Direction? {
+        return when (type) {
+            ChestType.SINGLE -> null
+
+            ChestType.LEFT -> {
+                facing.counterClockWise
+            }
+
+            ChestType.RIGHT -> {
+                facing.clockWise
+            }
+        }
+    }
 }
