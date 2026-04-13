@@ -1,4 +1,4 @@
-package club.pisquad.minecraft.csgrenades.config.common
+package club.pisquad.minecraft.csgrenades.grenades.firegrenade
 
 import club.pisquad.minecraft.csgrenades.config.ConfigSection
 import net.minecraftforge.common.ForgeConfigSpec

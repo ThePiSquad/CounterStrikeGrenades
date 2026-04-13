@@ -1,5 +1,6 @@
 package club.pisquad.minecraft.csgrenades
 
+import club.pisquad.minecraft.csgrenades.config.GrenadeConfigBuilder
 import club.pisquad.minecraft.csgrenades.config.ModConfig
 import club.pisquad.minecraft.csgrenades.core.CounterStrikeGrenadeRegistries
 import club.pisquad.minecraft.csgrenades.core.entity.CounterStrikeGrenadeEntity
@@ -21,7 +22,7 @@ interface WithGrenadeType {
 enum class GrenadeType(
     val resourceKey: String,
     // Use supplier to avoid circular initialization
-    val registries: Supplier<CounterStrikeGrenadeRegistries<out CounterStrikeGrenadeEntity, out CounterStrikeGrenadeItem, out GrenadeEntityDamageTypes, out GrenadeSoundEvents>>,
+    val registries: Supplier<CounterStrikeGrenadeRegistries<out CounterStrikeGrenadeEntity, out CounterStrikeGrenadeItem, out GrenadeEntityDamageTypes, out GrenadeSoundEvents, out GrenadeConfigBuilder>>,
 ) {
     FLASH_BANG(
         "flashbang",

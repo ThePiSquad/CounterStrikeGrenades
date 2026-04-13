@@ -9,10 +9,11 @@ import club.pisquad.minecraft.csgrenades.registry.ModDamageTypes
 import net.minecraft.world.item.Item
 
 object MolotovRegistries :
-    CounterStrikeGrenadeRegistries<MolotovEntity, MolotovItem, MolotovDamageTypes, MolotovSoundEvents>(
+    CounterStrikeGrenadeRegistries<MolotovEntity, MolotovItem, MolotovDamageTypes, MolotovSoundEvents, MolotovConfig>(
         GrenadeType.MOLOTOV,
         MolotovDamageTypes,
         MolotovSoundEvents,
+        MolotovConfig,
         ::MolotovEntity,
         { MolotovItem(Item.Properties()) }
     )

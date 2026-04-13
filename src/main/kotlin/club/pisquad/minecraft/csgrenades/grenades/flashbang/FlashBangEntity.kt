@@ -2,7 +2,6 @@ package club.pisquad.minecraft.csgrenades.grenades.flashbang
 
 import club.pisquad.minecraft.csgrenades.GrenadeType
 import club.pisquad.minecraft.csgrenades.ModLogger
-import club.pisquad.minecraft.csgrenades.config.ModConfig
 import club.pisquad.minecraft.csgrenades.core.entity.impl.ActivateByFuseGrenadeEntity
 import club.pisquad.minecraft.csgrenades.getPlayersWithinMessageRange
 import club.pisquad.minecraft.csgrenades.grenades.flashbang.messages.FlashbangActivatedMessage
@@ -15,7 +14,7 @@ import java.util.*
 
 class FlashBangEntity(pEntityType: EntityType<out FlashBangEntity>, pLevel: Level) : ActivateByFuseGrenadeEntity(
     pEntityType, pLevel,
-    ModConfig.flashbang.grenadeCommonConfig.fuseTime.get().toTick().toInt(),
+    FlashBangConfig.common.fuseTime.get().toTick().toInt(),
 ) {
     override val sounds = FlashbangRegistries.sounds
     override val damageTypes = FlashbangRegistries.damageTypes

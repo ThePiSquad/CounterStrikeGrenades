@@ -1,6 +1,5 @@
 package club.pisquad.minecraft.csgrenades.grenades.flashbang
 
-import club.pisquad.minecraft.csgrenades.config.ModConfig
 import club.pisquad.minecraft.csgrenades.isBetween
 import club.pisquad.minecraft.csgrenades.minus
 import kotlinx.serialization.Serializable
@@ -23,7 +22,7 @@ object FlashbangEffectCalculator {
 
         for (range in effectRanges) {
             if (angle.isBetween(range.angleMin, range.angleMax)) {
-                val f = Mth.clamp(distance.div(ModConfig.flashbang.blindEffectFadingRange.get()), 0.0, 1.0)
+                val f = Mth.clamp(distance.div(FlashBangConfig.blindEffect.fadingRange.get()), 0.0, 1.0)
                 val fullBlindDuration = Mth.lerp(f, range.fullBlindDuration, 0.0)
                 val totalDuration = Mth.lerp(f, range.totalDuration, 0.0)
                 return FlashbangBlindEffectData(fullBlindDuration, totalDuration)
@@ -38,13 +37,15 @@ object FlashbangEffectCalculator {
             return effectRangesCache!!
         }
 
+        val ranges = FlashBangConfig.blindEffect.ranges.get()
+
         var rangeMin: Double = 0.0
-        var rangeMax: Double = ModConfig.flashbang.blindEffectRanges.get()[0]
-        var fullBlindDuration: Double = ModConfig.flashbang.blindEffectRanges.get()[1]
+        var rangeMax: Double = ranges[0]
+        var fullBlindDuration: Double = ranges[1]
 
         val result: MutableList<EffectRange> = mutableListOf()
 
-        ModConfig.flashbang.blindEffectRanges.get().forEachIndexed { index, d ->
+        ranges.forEachIndexed { index, d ->
             when (index.mod(3)) {
                 0 -> {
                     rangeMax = d

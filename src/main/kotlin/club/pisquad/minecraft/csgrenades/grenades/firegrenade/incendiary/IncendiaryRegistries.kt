@@ -10,10 +10,11 @@ import net.minecraft.world.item.Item
 
 
 object IncendiaryRegistries :
-    CounterStrikeGrenadeRegistries<IncendiaryEntity, IncendiaryItem, IncendiaryDamageTypes, IncendiarySoundEvents>(
+    CounterStrikeGrenadeRegistries<IncendiaryEntity, IncendiaryItem, IncendiaryDamageTypes, IncendiarySoundEvents, IncendiaryConfig>(
         GrenadeType.INCENDIARY,
         IncendiaryDamageTypes,
         IncendiarySoundEvents,
+        IncendiaryConfig,
         ::IncendiaryEntity,
         { IncendiaryItem(Item.Properties()) })
 

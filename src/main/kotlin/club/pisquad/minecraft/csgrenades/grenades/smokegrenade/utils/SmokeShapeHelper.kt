@@ -1,6 +1,6 @@
 package club.pisquad.minecraft.csgrenades.grenades.smokegrenade.utils
 
-import club.pisquad.minecraft.csgrenades.config.ModConfig
+import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.SmokeGrenadeConfig
 import club.pisquad.minecraft.csgrenades.minus
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec2
@@ -15,7 +15,7 @@ object SmokeShapeHelper {
         val relativePos = position.minus(center)
 
         val c = getHalfFocalDistance(delta)
-        val a = ModConfig.smokegrenade.smokeWidth.get().times(delta)
+        val a = SmokeGrenadeConfig.spread.smokeWidth.get().times(delta)
         val axis = Vec2(relativePos.x.toFloat(), relativePos.z.toFloat()).normalized()
         val f1 = axis.scale(c.toFloat())
         val focus1 = Vec3(f1.x.toDouble(), 0.0, f1.y.toDouble())
@@ -26,15 +26,15 @@ object SmokeShapeHelper {
     }
 
     fun getHalfFocalDistance(delta: Double = 1.0): Double {
-        val width = ModConfig.smokegrenade.smokeWidth.get().times(delta)
-        val height = ModConfig.smokegrenade.smokeHeight.get().times(delta)
+        val width = SmokeGrenadeConfig.spread.smokeWidth.get().times(delta)
+        val height = SmokeGrenadeConfig.spread.smokeHeight.get().times(delta)
         return sqrt(width.pow(2) - height.pow(2))
     }
 
     fun getAllPossibleBlocks(center: Vec3): List<BlockPos> {
-        val width = ModConfig.smokegrenade.smokeWidth.get()
-        val height = ModConfig.smokegrenade.smokeHeight.get()
-        val maxFall = ModConfig.smokegrenade.maxFall.get()
+        val width = SmokeGrenadeConfig.spread.smokeWidth.get()
+        val height = SmokeGrenadeConfig.spread.smokeHeight.get()
+        val maxFall = SmokeGrenadeConfig.spread.maxFall.get()
 
         return buildList {
             for (x in floor(center.x - width).toInt()..ceil(center.x + width).toInt()) {

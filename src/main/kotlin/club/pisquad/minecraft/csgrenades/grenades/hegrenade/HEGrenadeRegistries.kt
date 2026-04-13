@@ -10,10 +10,11 @@ import club.pisquad.minecraft.csgrenades.registry.ModDamageTypes
 import net.minecraft.world.item.Item
 
 object HEGrenadeRegistries :
-    CounterStrikeGrenadeRegistries<HEGrenadeEntity, HEGrenadeItem, HEGrenadeDamageTypes, HEGrenadeSoundEvents>(
+    CounterStrikeGrenadeRegistries<HEGrenadeEntity, HEGrenadeItem, HEGrenadeDamageTypes, HEGrenadeSoundEvents, HEGrenadeConfig>(
         GrenadeType.HE_GRENADE,
         HEGrenadeDamageTypes,
         HEGrenadeSoundEvents,
+        HEGrenadeConfig,
         ::HEGrenadeEntity,
         { HEGrenadeItem(Item.Properties()) }
     )

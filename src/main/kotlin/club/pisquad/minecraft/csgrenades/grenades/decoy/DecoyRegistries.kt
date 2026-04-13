@@ -10,10 +10,11 @@ import club.pisquad.minecraft.csgrenades.registry.ModDamageTypes
 import net.minecraft.world.item.Item
 
 object DecoyRegistries :
-    CounterStrikeGrenadeRegistries<DecoyGrenadeEntity, DecoyGrenadeItem, DecoyDamageTypes, DecoySoundEvents>(
+    CounterStrikeGrenadeRegistries<DecoyGrenadeEntity, DecoyGrenadeItem, DecoyDamageTypes, DecoySoundEvents, DecoyConfig>(
         GrenadeType.DECOY,
         DecoyDamageTypes,
         DecoySoundEvents,
+        DecoyConfig,
         ::DecoyGrenadeEntity,
         { DecoyGrenadeItem(Item.Properties()) })
 

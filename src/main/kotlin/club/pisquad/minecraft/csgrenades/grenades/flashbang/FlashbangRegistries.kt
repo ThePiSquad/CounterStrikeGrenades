@@ -11,10 +11,11 @@ import net.minecraft.world.item.Item
 
 
 object FlashbangRegistries :
-    CounterStrikeGrenadeRegistries<FlashBangEntity, FlashBangItem, FlashBangDamageTypes, FlashbangSoundEvents>(
+    CounterStrikeGrenadeRegistries<FlashBangEntity, FlashBangItem, FlashBangDamageTypes, FlashbangSoundEvents, FlashBangConfig>(
         GrenadeType.FLASH_BANG,
         FlashBangDamageTypes,
         FlashbangSoundEvents,
+        FlashBangConfig,
         ::FlashBangEntity,
         { FlashBangItem(Item.Properties()) }
     )

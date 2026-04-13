@@ -12,10 +12,16 @@ import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.world.item.Item
 
 object SmokeGrenadeRegistries :
-    CounterStrikeGrenadeRegistries<SmokeGrenadeEntity, SmokeGrenadeItem, SmokeGrenadeDamageTypes, SmokeGrenadeSoundEvents>(
+    CounterStrikeGrenadeRegistries<
+            SmokeGrenadeEntity,
+            SmokeGrenadeItem,
+            SmokeGrenadeDamageTypes,
+            SmokeGrenadeSoundEvents, SmokeGrenadeConfig>
+        (
         GrenadeType.SMOKE_GRENADE,
         SmokeGrenadeDamageTypes,
         SmokeGrenadeSoundEvents,
+        SmokeGrenadeConfig,
         ::SmokeGrenadeEntity,
         { SmokeGrenadeItem(Item.Properties()) }
     ) {

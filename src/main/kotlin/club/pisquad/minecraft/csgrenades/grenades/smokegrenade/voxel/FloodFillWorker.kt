@@ -1,6 +1,6 @@
 package club.pisquad.minecraft.csgrenades.grenades.smokegrenade.voxel
 
-import club.pisquad.minecraft.csgrenades.config.ModConfig
+import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.SmokeGrenadeConfig
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.utils.SmokeShapeHelper
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.Vec3
@@ -13,7 +13,7 @@ class FloodFillWorker(
 
     fun compute(): RegionVoxelState {
         val centerPosition = VoxelPos.containing(center)
-        voxels[centerPosition]!!.intensity = ModConfig.smokegrenade.initialIntensity.get()
+        voxels[centerPosition]!!.intensity = SmokeGrenadeConfig.spread.initialIntensity.get()
 
         cycleStart = setOf(centerPosition)
 

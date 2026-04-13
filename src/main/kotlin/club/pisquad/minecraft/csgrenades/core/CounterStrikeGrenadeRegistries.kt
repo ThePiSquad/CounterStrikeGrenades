@@ -1,6 +1,7 @@
 package club.pisquad.minecraft.csgrenades.core
 
 import club.pisquad.minecraft.csgrenades.GrenadeType
+import club.pisquad.minecraft.csgrenades.config.GrenadeConfigBuilder
 import club.pisquad.minecraft.csgrenades.core.entity.CounterStrikeGrenadeEntity
 import club.pisquad.minecraft.csgrenades.core.item.CounterStrikeGrenadeItem
 import club.pisquad.minecraft.csgrenades.registry.GrenadeEntityDamageTypes
@@ -14,11 +15,13 @@ abstract class CounterStrikeGrenadeRegistries<
         E : CounterStrikeGrenadeEntity,
         I : CounterStrikeGrenadeItem,
         D : GrenadeEntityDamageTypes,
-        S : GrenadeSoundEvents
+        S : GrenadeSoundEvents,
+        C : GrenadeConfigBuilder
         >(
     val grenadeType: GrenadeType,
     val damageTypes: D,
     val sounds: S,
+    val config: C,
     entityFactory: EntityType.EntityFactory<E>,
     itemFactory: () -> I
 ) {
@@ -27,12 +30,3 @@ abstract class CounterStrikeGrenadeRegistries<
 
     open fun registerSerializers() {}
 }
-
-//object ModGrenadeRegistries {
-//    val HE_GRENADE = HEGrenadeRegistries
-//    val SMOKE_GRENADE = SmokeGrenadeRegistries
-//    val FLASHBANG = FlashbangRegistries
-//    val MOLOTOV = MolotovRegistries
-//    val INCENDIARY = IncendiaryRegistries
-//    val Decoy = DecoyRegistries
-//}

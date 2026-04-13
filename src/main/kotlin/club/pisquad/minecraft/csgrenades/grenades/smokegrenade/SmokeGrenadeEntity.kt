@@ -2,7 +2,6 @@ package club.pisquad.minecraft.csgrenades.grenades.smokegrenade
 
 import club.pisquad.minecraft.csgrenades.GrenadeType
 import club.pisquad.minecraft.csgrenades.ModLogger
-import club.pisquad.minecraft.csgrenades.config.ModConfig
 import club.pisquad.minecraft.csgrenades.core.entity.impl.ActivateAfterLandingGrenadeEntity
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.data.AttachedSmokeData
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.messages.SmokeGrenadeActivatedMessage
@@ -21,7 +20,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out SmokeGrenadeEntity>, pLevel
     ActivateAfterLandingGrenadeEntity(
         pEntityType,
         pLevel,
-        ModConfig.smokegrenade.grenadeCommonConfig.fuseTime.get().toTick().toInt(),
+        SmokeGrenadeConfig.common.fuseTime.get().toTick().toInt(),
     ) {
     var voxelWorker: VoxelWorker? = null
 
