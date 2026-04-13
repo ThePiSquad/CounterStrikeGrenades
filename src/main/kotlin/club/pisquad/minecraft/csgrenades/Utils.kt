@@ -220,3 +220,7 @@ internal fun Boolean.toInt(): Int {
         0
     }
 }
+
+fun horizontalDirections(): Set<Direction> {
+    return Direction.entries.filter { it.axis.isHorizontal }.toSet()
+}

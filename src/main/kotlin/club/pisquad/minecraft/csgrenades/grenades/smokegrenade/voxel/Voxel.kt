@@ -84,6 +84,10 @@ class ComputeVoxel(
             return generator.apply(0)
         }
 
+        fun isBlocking(direction: Direction): Boolean {
+            return !this.contains(direction)
+        }
+
         companion object {
             val ALL = Connectivity(EnumSet.allOf(Direction::class.java))
             val NONE = Connectivity(EnumSet.noneOf(Direction::class.java))

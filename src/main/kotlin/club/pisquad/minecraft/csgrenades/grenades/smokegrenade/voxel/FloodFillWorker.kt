@@ -2,9 +2,13 @@ package club.pisquad.minecraft.csgrenades.grenades.smokegrenade.voxel
 
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.SmokeGrenadeConfig
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.utils.SmokeShapeHelper
+import club.pisquad.minecraft.csgrenades.horizontalDirections
+import club.pisquad.minecraft.csgrenades.isBetween
 import net.minecraft.core.Direction
+import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
 import kotlin.math.*
+import kotlin.random.Random
 
 class FloodFillWorker(
     val center: Vec3,
@@ -19,14 +23,15 @@ class FloodFillWorker(
 
         cycleStart = setOf(centerPosition)
 
-        //Basic shape
+        //region Basic shape
         while (cycleStart.isNotEmpty()) {
             cycleStart = spreadOnce(cycleStart, voxels) { voxelPos ->
                 SmokeShapeHelper.isInsideBaseShape(center, voxelPos.center)
             }
         }
+        //endregion
 
-        //Squeeze
+        //region Squeeze
         val edges = voxels.getVoxelMap().edges.value.filter { pos ->
             // Test if any neighbor is spreadable
             // Which means this voxel's spread is terminated by the shape checker/ or terminated by not able to spread
@@ -51,8 +56,43 @@ class FloodFillWorker(
                 }
             }
         }
-        // Fill space below
-        // TODO
+        //endregion
+
+        //region Fill space below
+        val bottomLayer = voxels.getBottomLayer().filter { pos ->
+            voxels[pos]!!.intensity > 1
+        }.toSet()
+        val horizontalPossibility = Mth.clamp(0.1 * sqrt(bottomLayer.size.toDouble()), 0.0, 1.0)
+        // check for ground below
+        val maxFall = SmokeGrenadeConfig.spread.maxFall.get()
+        val maxFallVoxelDistance = ceil(maxFall.times(2)).toInt()
+
+        val hasGroundBelow = bottomLayer.any {
+            it.run {
+                repeat(maxFallVoxelDistance) { distance ->
+                    val pos = VoxelPos(this.x, this.y - distance - 1, this.z)
+                    val voxel = voxels[pos]
+                    if (voxel != null) {
+                        if (voxel.connectivity.isBlocking(Direction.UP)) {
+                            return@run true
+                        }
+                    }
+                }
+                false
+            }
+        }
+        if (hasGroundBelow) {
+            cycleStart = bottomLayer
+            var counter = 0
+
+            while (!cycleStart.isEmpty() && counter < maxFallVoxelDistance) {
+                counter++
+                cycleStart = spreadDownwardOnce(cycleStart, voxels, horizontalPossibility)
+            }
+        }
+
+
+        //endregion
 
         return voxels.filterNonEmpty()
     }
@@ -104,6 +144,37 @@ class FloodFillWorker(
                 }
             }
             return nextCycle
+        }
+
+        private fun spreadDownwardOnce(
+            elements: Set<VoxelPos>,
+            voxels: RegionVoxelState,
+            horizontalPossibility: Double,
+        ): Set<VoxelPos> {
+            check(horizontalPossibility.isBetween(0.0, 1.0))
+            val updateQueue: MutableSet<VoxelPos> = mutableSetOf()
+            elements.forEach { pos ->
+                val voxel = voxels[pos] ?: return@forEach
+                val target = voxels[pos.relative(Direction.DOWN)] ?: return@forEach
+                val intensity = voxel.neighborIntensity(Direction.DOWN)
+                val updateNextLayer = target.triggerIntensityUpdate(Direction.UP, intensity)
+                if (updateNextLayer) {
+                    updateQueue.add(target.position)
+                    val horizontal = Random.nextDouble() < horizontalPossibility
+                    if (horizontal) {
+                        horizontalDirections().forEach { direction ->
+                            val voxel = voxels[pos.relative(Direction.DOWN)]!!
+                            val target = voxels[voxel.position.relative(direction)] ?: return@forEach
+                            val intensity = voxel.neighborIntensity(direction)
+                            val needUpdate = target.triggerIntensityUpdate(direction.opposite, intensity)
+                            if (needUpdate) {
+                                updateQueue.add(target.position)
+                            }
+                        }
+                    }
+                }
+            }
+            return updateQueue
         }
     }
 }

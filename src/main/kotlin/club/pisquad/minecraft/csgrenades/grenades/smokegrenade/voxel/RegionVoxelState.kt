@@ -8,7 +8,7 @@ import net.minecraft.world.phys.Vec3
 
 class RegionVoxelState(
     @Serializable(with = Vec3Serializer::class) val center: Vec3,
-    private val voxels: MutableMap<VoxelPos, ComputeVoxel>
+    val voxels: MutableMap<VoxelPos, ComputeVoxel>
 ) : MutableMap<VoxelPos, ComputeVoxel> by voxels {
 
     companion object {
@@ -42,5 +42,22 @@ class RegionVoxelState(
                 put(pos, voxel.toVoxel())
             }
         })
+    }
+
+    fun getBottomLayer(): Set<VoxelPos> {
+        val bottomLayer: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
+        this.forEach { (pos, voxel) ->
+            if (voxel.intensity > 0) {
+                val prevY = bottomLayer.getOrPut(Pair(pos.x, pos.z)) { pos.y }
+                if (prevY > pos.y) {
+                    bottomLayer[Pair(pos.x, pos.z)] = pos.y
+                }
+            }
+        }
+        return buildSet {
+            bottomLayer.forEach { (xz, y) ->
+                add(VoxelPos(xz.first, y, xz.second))
+            }
+        }
     }
 }
