@@ -12,23 +12,18 @@ import kotlin.math.max
  * representing a single voxel, 1/8 of a block
  *
  * @property position voxel's position, different from BlockPos
- * @property intensity representing the amount of smoke that is inside this voxel, default to zero
  * @property debug Debug info
  */
 @Serializable
 open class Voxel(
     val position: VoxelPos,
-    var intensity: Int = 0,
     val debug: VoxelDebug? = null,
 )
 
 @Serializable
 class VoxelMap(
-    private val inner: Map<VoxelPos, Voxel>
+    val inner: Map<VoxelPos, Voxel>
 ) : Map<VoxelPos, Voxel> by inner {
-    fun filterNonEmpty(): VoxelMap {
-        return VoxelMap(this.inner.filter { (_, voxel) -> voxel.intensity > 0 })
-    }
 
     val edges = lazy { this.keys.filter { this.isEdge(it) } }
     val specials = lazy {
@@ -38,6 +33,7 @@ class VoxelMap(
             emptyList()
         }
     }
+
     val hasDebug = lazy { this.values.all { it.debug != null } }
 
     fun isEdge(position: VoxelPos): Boolean {
@@ -123,7 +119,7 @@ class ComputeVoxel(
 
     fun toVoxel(): Voxel {
         return Voxel(
-            this.position, this.intensity, VoxelDebug(
+            this.position, VoxelDebug(
                 this.special,
                 this.parent
             )

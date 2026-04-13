@@ -34,6 +34,6 @@ class VoxelWorker(entity: SmokeGrenadeEntity) {
 
     fun blockingUntilComplete(): VoxelMap {
         val result = runBlocking { coroutineWorker.await() }
-        return VoxelMap(result.mapValues { (_, value) -> value.toVoxel() }).filterNonEmpty()
+        return VoxelMap(result.mapValues { (_, value) -> value.toVoxel() })
     }
 }

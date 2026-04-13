@@ -1,6 +1,8 @@
 package club.pisquad.minecraft.csgrenades.grenades.smokegrenade.utils
 
 import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.SmokeGrenadeConfig
+import club.pisquad.minecraft.csgrenades.grenades.smokegrenade.voxel.VoxelPos
+import club.pisquad.minecraft.csgrenades.math.Quadrant
 import club.pisquad.minecraft.csgrenades.minus
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec2
@@ -11,6 +13,39 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 object SmokeShapeHelper {
+
+    fun baseShapeSize(): Int {
+        val voxels = buildSet {
+            val blocks = getAllPossibleBlocks(Vec3.ZERO)
+            blocks.forEach { blockPos ->
+                Quadrant.entries.forEach { quadrant ->
+                    val voxelPos = VoxelPos.fromBlockAndQuadrant(blockPos, quadrant)
+                    add(voxelPos)
+                }
+            }
+        }
+        return voxels.filter { isInsideBaseShape(Vec3.ZERO, it.center) }.size
+    }
+
+    fun centerLevelSize(): Int {
+        val voxels = buildSet {
+            val blocks = getAllPossibleBlocks(Vec3.ZERO)
+            blocks.forEach { blockPos ->
+                Quadrant.entries.forEach { quadrant ->
+                    val voxelPos = VoxelPos.fromBlockAndQuadrant(blockPos, quadrant)
+                    if (voxelPos.y == 0) {
+                        add(voxelPos)
+                    }
+                }
+            }
+        }
+        return voxels.filter { isInsideBaseShape(Vec3.ZERO, it.center) }.size
+    }
+
+    //    fun isInsideBaseShape(center: Vec3, position: Vec3, delta: Double = 1.0): Boolean {
+//        val width = SmokeGrenadeConfig.spread.smokeWidth.get()
+//        return position.distanceToSqr(center) < width.pow(2)
+//    }
     fun isInsideBaseShape(center: Vec3, position: Vec3, delta: Double = 1.0): Boolean {
         val relativePos = position.minus(center)
 
@@ -36,10 +71,13 @@ object SmokeShapeHelper {
         val height = SmokeGrenadeConfig.spread.smokeHeight.get()
         val maxFall = SmokeGrenadeConfig.spread.maxFall.get()
 
+        val widthMultiplier: Int = 2
+        val heightMultiplier: Int = 2
+
         return buildList {
-            for (x in floor(center.x - width).toInt()..ceil(center.x + width).toInt()) {
-                for (z in floor(center.z - width).toInt()..ceil(center.z + width).toInt()) {
-                    for (y in floor(center.y - height - maxFall).toInt()..ceil(center.y + height).toInt()) {
+            for (x in floor(center.x - width * widthMultiplier).toInt()..ceil(center.x + width * widthMultiplier).toInt()) {
+                for (z in floor(center.z - width * widthMultiplier).toInt()..ceil(center.z + width * widthMultiplier).toInt()) {
+                    for (y in floor(center.y - (height * heightMultiplier) - maxFall).toInt()..ceil(center.y + height * heightMultiplier).toInt()) {
                         add(BlockPos(x, y, z))
                     }
                 }

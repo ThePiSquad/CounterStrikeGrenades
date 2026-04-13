@@ -34,4 +34,13 @@ class RegionVoxelState(
             this.filter { (_, state) -> state.intensity > 0 }.toMutableMap()
         )
     }
+
+    fun getVoxelMap(): VoxelMap {
+        val voxels = this.filterNonEmpty()
+        return VoxelMap(buildMap {
+            voxels.forEach { (pos, voxel) ->
+                put(pos, voxel.toVoxel())
+            }
+        })
+    }
 }
