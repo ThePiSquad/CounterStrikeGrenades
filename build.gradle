@@ -4,9 +4,9 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     // Adds the Kotlin Gradle plugin
-    id 'org.jetbrains.kotlin.jvm' version '2.2.0'
+    id 'org.jetbrains.kotlin.jvm' version '2.3.20'
     // OPTIONAL Kotlin Serialization plugin
-    id 'org.jetbrains.kotlin.plugin.serialization' version '2.2.0'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.20'
 }
 
 version = mod_version
@@ -38,7 +38,16 @@ minecraft {
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
-//            jvmArg("-Dorg.lwjgl.glfw.libname=/usr/lib/libglfw.so")
+            if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+                // NOTE(hukening81): This is mainly for my use case, since native glfw has some issue under wayland that will crash the test instance.
+                def libglfw = project.file("external/libglfw.so.3.4").absolutePath
+                println "Running on a linux machine, use custom glfw library: $libglfw"
+
+                jvmArgs("-Dorg.lwjgl.glfw.libname=$libglfw")
+
+                // NOTE(hukening81): disable threaded optimization is recommended
+                environment '__GL_THREADED_OPTIMIZATIONS', '0'
+            }
             mods {
                 "$mod_id" {
                     source sourceSets.main
@@ -133,7 +142,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:$minecraft_version-$forge_version"
 
     implementation "thedarkcolour:kotlinforforge:$kff_version"
-    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:7401617")
+    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:8141310")
 //    implementation "maven.modrinth:timeless-and-classics-zero:$tacz_version"
     runtimeOnly "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.1"
 }
