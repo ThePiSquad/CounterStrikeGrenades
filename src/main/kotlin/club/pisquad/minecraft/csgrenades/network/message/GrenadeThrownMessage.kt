@@ -42,42 +42,45 @@ class GrenadeThrownMessage(
             val context = ctx.get()
             val player: ServerPlayer = context.sender ?: return
 
-            val serverLevel: ServerLevel = player.level() as ServerLevel
+            context.enqueueWork {
 
-            val entityType = when (msg.grenadeType) {
-                GrenadeType.FLASH_BANG -> ModEntities.FLASH_BANG_ENTITY.get()
-                GrenadeType.SMOKE_GRENADE -> ModEntities.SMOKE_GRENADE_ENTITY.get()
-                GrenadeType.HEGRENADE -> ModEntities.HEGRENADE_ENTITY.get()
-                GrenadeType.INCENDIARY -> ModEntities.INCENDIARY_ENTITY.get()
-                GrenadeType.MOLOTOV -> ModEntities.MOLOTOV_ENTITY.get()
-                GrenadeType.DECOY_GRENADE -> ModEntities.DECOY_GRENADE_ENTITY.get()
-            }
+                val serverLevel: ServerLevel = player.level() as ServerLevel
 
-            val grenadeEntity = entityType.create(serverLevel) ?: return
-            grenadeEntity.owner = context.sender?.level()?.getPlayerByUUID(msg.ownerUUID)
-
-            if (grenadeEntity is club.pisquad.minecraft.csgrenades.entity.DecoyGrenadeEntity) {
-                grenadeEntity.findAndSetTaczGunIdOnThrow()
-                if (!msg.customSound.isNullOrBlank()) {
-                    grenadeEntity.setCustomSound(msg.customSound)
+                val entityType = when (msg.grenadeType) {
+                    GrenadeType.FLASH_BANG -> ModEntities.FLASH_BANG_ENTITY.get()
+                    GrenadeType.SMOKE_GRENADE -> ModEntities.SMOKE_GRENADE_ENTITY.get()
+                    GrenadeType.HEGRENADE -> ModEntities.HEGRENADE_ENTITY.get()
+                    GrenadeType.INCENDIARY -> ModEntities.INCENDIARY_ENTITY.get()
+                    GrenadeType.MOLOTOV -> ModEntities.MOLOTOV_ENTITY.get()
+                    GrenadeType.DECOY_GRENADE -> ModEntities.DECOY_GRENADE_ENTITY.get()
                 }
-            }
 
-            grenadeEntity.setPos(msg.position)
-            grenadeEntity.shootFromRotation(
-                player,
-                msg.rotation.x,
-                msg.rotation.y,
-                0.0f, // Roll is not used
-                msg.speed.toFloat(),
-                0f,
-            )
+                val grenadeEntity = entityType.create(serverLevel) ?: return@enqueueWork
+                grenadeEntity.owner = context.sender?.level()?.getPlayerByUUID(msg.ownerUUID)
 
-            serverLevel.addFreshEntity(grenadeEntity)
+                if (grenadeEntity is club.pisquad.minecraft.csgrenades.entity.DecoyGrenadeEntity) {
+                    grenadeEntity.findAndSetTaczGunIdOnThrow()
+                    if (!msg.customSound.isNullOrBlank()) {
+                        grenadeEntity.setCustomSound(msg.customSound)
+                    }
+                }
 
-            context.packetHandled = true
-            if (!player.isCreative) {
-                player.getItemInHand(InteractionHand.MAIN_HAND).count -= 1
+                grenadeEntity.setPos(msg.position)
+                grenadeEntity.shootFromRotation(
+                    player,
+                    msg.rotation.x,
+                    msg.rotation.y,
+                    0.0f, // Roll is not used
+                    msg.speed.toFloat(),
+                    0f,
+                )
+
+                serverLevel.addFreshEntity(grenadeEntity)
+
+                context.packetHandled = true
+                if (!player.isCreative) {
+                    player.getItemInHand(InteractionHand.MAIN_HAND).count -= 1
+                }
             }
         }
     }
