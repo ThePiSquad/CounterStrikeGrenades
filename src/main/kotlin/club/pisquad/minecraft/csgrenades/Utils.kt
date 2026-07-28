@@ -18,6 +18,8 @@ import kotlin.random.Random
  *Since KFF is not mapping those methods correctly
  */
 
+operator fun Vec3.minus(other: Vec3): Vec3 = this.add(other.reverse())
+
 fun Vec3.toVec3i(): Vec3i = Vec3i(x.toInt(), y.toInt(), z.toInt())
 
 fun Vec3.snapToAxis(): Direction {
