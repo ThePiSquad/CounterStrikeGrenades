@@ -45,7 +45,7 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.common.Tags
 import net.minecraftforge.fml.ModList
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.minus
+import club.pisquad.minecraft.csgrenades.minus
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.pow
@@ -66,6 +66,14 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
     private var finalXRot = 0f
     private var finalYRot = 0f
     private var finalZRot = 0f
+
+    var center: Vec3
+        get() {
+            return this.position().add(Vec3(GRENADE_ENTITY_SIZE / 2.0, GRENADE_ENTITY_SIZE / 2.0, GRENADE_ENTITY_SIZE / 2.0))
+        }
+        set(pos: Vec3) {
+            this.setPos(pos.minus(Vec3(GRENADE_ENTITY_SIZE / 2.0, GRENADE_ENTITY_SIZE / 2.0, GRENADE_ENTITY_SIZE / 2.0)))
+        }
 
     override fun getDefaultItem(): Item = ModItems.SMOKE_GRENADE_ITEM.get()
 
@@ -135,7 +143,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
     ).toInt()
 
     override fun tick() {
-        if (this.entityData.get(isActivatedAccessor)) {
+        if (this.entityData.get(isExplodedAccessor)) {
             // Forcefully freeze rotation and position
             if (this.level().isClientSide) {
                 if (!hasSavedFinalRotation) {
@@ -175,6 +183,23 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
 
         super.tick() // Only run physics tick if not exploded
 
+        // Fallback: force-land if stuck in partial blocks for 2 seconds
+        if (!this.entityData.get(isLandedAccessor)) {
+            val isStuck = this.deltaMovement.lengthSqr() < 0.0025
+                && this.position() == Vec3(this.xOld, this.yOld, this.zOld)
+            if (isStuck) {
+                stationaryTicks++
+            } else {
+                stationaryTicks = 0
+            }
+            if (stationaryTicks > 40) {
+                this.deltaMovement = Vec3.ZERO
+                this.entityData.set(CounterStrikeGrenadeEntity.isLandedAccessor, true)
+                this.isNoGravity = true
+                stationaryTicks = 0
+            }
+        }
+
         if (this.entityData.get(isLandedAccessor)) {
             if (this.position() == Vec3(this.xOld, this.yOld, this.zOld)) {
                 stationaryTicks++
@@ -190,7 +215,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                     this.entityData.set(spreadBlocksAccessor, calculateSpreadBlocks())
                     this.setItem(net.minecraft.world.item.ItemStack.EMPTY)
                 }
-                this.entityData.set(isActivatedAccessor, true)
+                this.entityData.set(isExplodedAccessor, true)
                 this.explosionTime = Instant.now()
             }
         }
@@ -301,7 +326,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         val extinguishedFires: List<AbstractFireGrenade>
         val smokeRadius = ModConfig.SmokeGrenade.SMOKE_RADIUS.get()
         val smokeFallingHeight = ModConfig.SmokeGrenade.SMOKE_MAX_FALLING_HEIGHT.get()
-        if (this.entityData.get(isActivatedAccessor)) {
+        if (this.entityData.get(isExplodedAccessor)) {
             val bb = AABB(this.blockPosition()).inflate(
                 smokeRadius.toDouble(),
                 smokeFallingHeight.toDouble(),
@@ -312,7 +337,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                 AbstractFireGrenade::class.java,
                 bb,
             ) {
-                it.entityData.get(isActivatedAccessor) && canDistinguishFire(it.position())
+                it.entityData.get(isExplodedAccessor) && canDistinguishFire(it.position())
             }
         } else {
             val bb = AABB(this.blockPosition()).inflate(ModConfig.FireGrenade.FIRE_RANGE.get().toDouble())
@@ -320,7 +345,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                 AbstractFireGrenade::class.java,
                 bb,
             ) {
-                it.entityData.get(isActivatedAccessor) && it.getSpreadBlocks()
+                it.entityData.get(isExplodedAccessor) && it.getSpreadBlocks()
                     .any { pos -> pos.above().center.distanceToSqr(this.position()) < 2 }
             }
         }
@@ -533,7 +558,9 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                     val corner = getGrenadeCornerType(blockAt, this.center)
                     return ExtendableBlockState(north, south, west, east).nonBlockingAdjacentForCorner(blockAt, corner).toMutableList().filterAir(this.level())
                 } else {
-                    // Unhandled situation, default to emptyList
+                    // Fallback for unhandled thin blocks (buttons, carpets, etc.)
+                    val adjacentAir = blockAt.adjacent().filter { this.level().getBlockState(it).isAir }
+                    if (adjacentAir.isNotEmpty()) return adjacentAir.toMutableList()
                     return listOf()
                 }
             }
