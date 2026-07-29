@@ -52,7 +52,8 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : CounterStrikeGrenadeEntity(pEntityType, pLevel, GrenadeType.FLASH_BANG) {
+class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) :
+    CounterStrikeGrenadeEntity(pEntityType, pLevel, GrenadeType.FLASH_BANG) {
 
     private var lastPos: Vec3i = Vec3i(0, 0, 0)
     private val particles = mutableMapOf<Vec3i, List<SmokeGrenadeParticle>>()
@@ -66,14 +67,6 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
     private var finalXRot = 0f
     private var finalYRot = 0f
     private var finalZRot = 0f
-
-    var center: Vec3
-        get() {
-            return this.position().add(Vec3(GRENADE_ENTITY_SIZE / 2.0, GRENADE_ENTITY_SIZE / 2.0, GRENADE_ENTITY_SIZE / 2.0))
-        }
-        set(pos: Vec3) {
-            this.setPos(pos.minus(Vec3(GRENADE_ENTITY_SIZE / 2.0, GRENADE_ENTITY_SIZE / 2.0, GRENADE_ENTITY_SIZE / 2.0)))
-        }
 
     override fun getDefaultItem(): Item = ModItems.SMOKE_GRENADE_ITEM.get()
 
@@ -136,14 +129,15 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         }
     }
 
-    private fun getRegenerationTime(distance: Double, radius: Double): Int = ModConfig.SmokeGrenade.TIME_BEFORE_REGENERATE.get().millToTick().toInt() + linearInterpolate(
-        ModConfig.SmokeGrenade.REGENERATION_TIME.get().millToTick().toDouble(),
-        0.0,
-        distance / radius,
-    ).toInt()
+    private fun getRegenerationTime(distance: Double, radius: Double): Int =
+        ModConfig.SmokeGrenade.TIME_BEFORE_REGENERATE.get().millToTick().toInt() + linearInterpolate(
+            ModConfig.SmokeGrenade.REGENERATION_TIME.get().millToTick().toDouble(),
+            0.0,
+            distance / radius,
+        ).toInt()
 
     override fun tick() {
-        if (this.entityData.get(isExplodedAccessor)) {
+        if (this.entityData.get(isActivatedAccessor)) {
             // Forcefully freeze rotation and position
             if (this.level().isClientSide) {
                 if (!hasSavedFinalRotation) {
@@ -186,15 +180,15 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         // Fallback: force-land if stuck in partial blocks for 2 seconds
         if (!this.entityData.get(isLandedAccessor)) {
             val isStuck = this.deltaMovement.lengthSqr() < 0.0025
-                && this.position() == Vec3(this.xOld, this.yOld, this.zOld)
+                    && this.position() == Vec3(this.xOld, this.yOld, this.zOld)
             if (isStuck) {
                 stationaryTicks++
             } else {
                 stationaryTicks = 0
             }
-            if (stationaryTicks > 40) {
+            if (stationaryTicks > 20) {
                 this.deltaMovement = Vec3.ZERO
-                this.entityData.set(CounterStrikeGrenadeEntity.isLandedAccessor, true)
+                this.entityData.set(isLandedAccessor, true)
                 this.isNoGravity = true
                 stationaryTicks = 0
             }
@@ -215,7 +209,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                     this.entityData.set(spreadBlocksAccessor, calculateSpreadBlocks())
                     this.setItem(net.minecraft.world.item.ItemStack.EMPTY)
                 }
-                this.entityData.set(isExplodedAccessor, true)
+                this.entityData.set(isActivatedAccessor, true)
                 this.explosionTime = Instant.now()
             }
         }
@@ -237,7 +231,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
 
         val smokeRadius = ModConfig.SmokeGrenade.SMOKE_RADIUS.get().toDouble()
         val smokeFallingHeight = ModConfig.SmokeGrenade.SMOKE_MAX_FALLING_HEIGHT.get().toDouble()
-        val smokeCloudBoundingBox = AABB(this.blockPosition()).inflate(smokeRadius).expandTowards(0.0, -smokeFallingHeight, 0.0)
+        val smokeCloudBoundingBox =
+            AABB(this.blockPosition()).inflate(smokeRadius).expandTowards(0.0, -smokeFallingHeight, 0.0)
 
         nearbyArrows.forEach { arrow ->
             // Use a "swept" bounding box to detect fast-moving entities that pass through the cloud in a single tick.
@@ -251,7 +246,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                 // Interpolate position to prevent tunneling
                 val posNow = arrow.position()
                 val posOld = posNow.subtract(delta)
-                val steps = (delta.length() / 0.5).toInt().coerceAtLeast(1).coerceAtMost(30) // Check every 50cm, with a higher cap
+                val steps = (delta.length() / 0.5).toInt().coerceAtLeast(1)
+                    .coerceAtMost(30) // Check every 50cm, with a higher cap
                 for (i in 0..steps) {
                     val interpolatedPos = posOld.lerp(posNow, i.toDouble() / steps)
                     this.clearSmokeWithinRange(interpolatedPos, ModConfig.SmokeGrenade.ARROW_CLEAR_RANGE.get(), i == 0)
@@ -271,7 +267,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
             val smokeCenter = this.position()
             val smokeRadius = ModConfig.SmokeGrenade.SMOKE_RADIUS.get().toDouble()
             val smokeFallingHeight = ModConfig.SmokeGrenade.SMOKE_MAX_FALLING_HEIGHT.get().toDouble()
-            val smokeCloudBoundingBox = AABB(BlockPos.containing(smokeCenter)).inflate(smokeRadius).expandTowards(0.0, -smokeFallingHeight, 0.0)
+            val smokeCloudBoundingBox =
+                AABB(BlockPos.containing(smokeCenter)).inflate(smokeRadius).expandTowards(0.0, -smokeFallingHeight, 0.0)
 
             allRenderEntities.forEach { entity ->
                 // Use a "swept" bounding box to detect fast-moving entities that pass through the cloud in a single tick.
@@ -326,7 +323,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         val extinguishedFires: List<AbstractFireGrenade>
         val smokeRadius = ModConfig.SmokeGrenade.SMOKE_RADIUS.get()
         val smokeFallingHeight = ModConfig.SmokeGrenade.SMOKE_MAX_FALLING_HEIGHT.get()
-        if (this.entityData.get(isExplodedAccessor)) {
+        if (this.entityData.get(isActivatedAccessor)) {
             val bb = AABB(this.blockPosition()).inflate(
                 smokeRadius.toDouble(),
                 smokeFallingHeight.toDouble(),
@@ -337,7 +334,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                 AbstractFireGrenade::class.java,
                 bb,
             ) {
-                it.entityData.get(isExplodedAccessor) && canDistinguishFire(it.position())
+                it.entityData.get(isActivatedAccessor) && canDistinguishFire(it.position())
             }
         } else {
             val bb = AABB(this.blockPosition()).inflate(ModConfig.FireGrenade.FIRE_RANGE.get().toDouble())
@@ -345,7 +342,7 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                 AbstractFireGrenade::class.java,
                 bb,
             ) {
-                it.entityData.get(isExplodedAccessor) && it.getSpreadBlocks()
+                it.entityData.get(isActivatedAccessor) && it.getSpreadBlocks()
                     .any { pos -> pos.above().center.distanceToSqr(this.position()) < 2 }
             }
         }
@@ -457,7 +454,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                 val west = blockAtState.getValue(BlockStateProperties.WEST)
 
                 val corner = getGrenadeCornerType(blockAt, this.center)
-                return ExtendableBlockState(north, south, west, east).nonBlockingAdjacentForCorner(blockAt, corner).toMutableList().filterAir(this.level())
+                return ExtendableBlockState(north, south, west, east).nonBlockingAdjacentForCorner(blockAt, corner)
+                    .toMutableList().filterAir(this.level())
             }
 
             is ChainBlock -> {
@@ -556,7 +554,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
                     val west = blockAtState.getValue(BlockStateProperties.WEST)
 
                     val corner = getGrenadeCornerType(blockAt, this.center)
-                    return ExtendableBlockState(north, south, west, east).nonBlockingAdjacentForCorner(blockAt, corner).toMutableList().filterAir(this.level())
+                    return ExtendableBlockState(north, south, west, east).nonBlockingAdjacentForCorner(blockAt, corner)
+                        .toMutableList().filterAir(this.level())
                 } else {
                     // Fallback for unhandled thin blocks (buttons, carpets, etc.)
                     val adjacentAir = blockAt.adjacent().filter { this.level().getBlockState(it).isAir }
@@ -599,7 +598,9 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
             var hitGround = false
             var currentPos = lowestBlock
             for (i in 0 until maxFallHeight) {
-                if (this.level().getBlockState(currentPos.below()).getCollisionShape(this.level(), currentPos.below()).isEmpty) {
+                if (this.level().getBlockState(currentPos.below())
+                        .getCollisionShape(this.level(), currentPos.below()).isEmpty
+                ) {
                     fallDistance++
                     currentPos = currentPos.below()
                 } else {
@@ -631,7 +632,9 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         // Find max distance from center for normalization
         var maxDist = 0.0
         for (key in smokeColumns.keys) {
-            val dist = kotlin.math.sqrt((key.first - centerKey.first).toDouble().pow(2.0) + (key.second - centerKey.second).toDouble().pow(2.0))
+            val dist = kotlin.math.sqrt(
+                (key.first - centerKey.first).toDouble().pow(2.0) + (key.second - centerKey.second).toDouble().pow(2.0)
+            )
             if (dist > maxDist) maxDist = dist
         }
         maxDist = maxDist.coerceAtLeast(1.0) // Avoid division by zero
@@ -639,7 +642,9 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         for ((key, columnBlocks) in smokeColumns) {
             val rawFallDistance = columnFallInfo[key] ?: 0
 
-            val distFromCenter = kotlin.math.sqrt((key.first - centerKey.first).toDouble().pow(2.0) + (key.second - centerKey.second).toDouble().pow(2.0))
+            val distFromCenter = kotlin.math.sqrt(
+                (key.first - centerKey.first).toDouble().pow(2.0) + (key.second - centerKey.second).toDouble().pow(2.0)
+            )
 
             // Weight is high (1.0) at the center, and low (0.0) at the max distance.
             val weight = (1.0 - (distFromCenter / maxDist)).coerceIn(0.0, 1.0)
@@ -658,7 +663,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
 
     override fun getHitDamageSource(hitEntity: LivingEntity): DamageSource {
         val registryAccess = this.level().registryAccess()
-        val damageTypeHolder = registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ModDamageType.SMOKEGRENADE_HIT)
+        val damageTypeHolder =
+            registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(ModDamageType.SMOKEGRENADE_HIT)
         return if (hitEntity == this.owner) {
             DamageSource(damageTypeHolder, this)
         } else {
@@ -673,7 +679,8 @@ class SmokeGrenadeEntity(pEntityType: EntityType<out ThrowableItemProjectile>, p
         return this.spreadBlocksCache
     }
 
-    fun canDistinguishFire(position: Vec3): Boolean = this.getSpreadBlocks().any { it.center.distanceToSqr(position) < 2.0 }
+    fun canDistinguishFire(position: Vec3): Boolean =
+        this.getSpreadBlocks().any { it.center.distanceToSqr(position) < 2.0 }
 }
 
 private class SmokeGrenadeSpreadBlockCalculator(
